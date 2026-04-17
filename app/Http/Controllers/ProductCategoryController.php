@@ -15,9 +15,9 @@ class ProductCategoryController extends Controller
         $limit = $request->limit??10;
         if($request->has('q') && $request->q!='') {
             $q = $request->q;
-            $data = ProductCategories::where('title', 'LIKE', "%{$q}%")->OrderBy('id', $sort)->paginate($limit);
+            $data = ProductCategories::withCount('products')->where('title', 'LIKE', "%{$q}%")->OrderBy('id', $sort)->paginate($limit);
         } else {
-            $data = ProductCategories::OrderBy('id', $sort)->paginate($limit);
+            $data = ProductCategories::withCount('products')->OrderBy('id', $sort)->paginate($limit);
         }
         return view('backend.products.category.index', compact('data'));
     }

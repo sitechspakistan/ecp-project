@@ -1,5 +1,5 @@
 @extends('layouts.backend')
-@section('title', 'Create Product')
+@section('title', 'Create Puppy')
 @section('customStyles')
 <link rel="stylesheet" href="{{asset('assets_backend/css/bootstrap-tagsinput.css')}}" />
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -112,7 +112,7 @@
           <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center py-2">
             <div class="flex-grow-1">
               <h1 class="h3 fw-bold mb-1">
-                Products
+                Puppies
               </h1>
               {{-- <h2 class="fs-base lh-base fw-medium text-muted mb-0">
                 Multiple style options to match your preferences.
@@ -122,7 +122,7 @@
                   <a class="link-fx" href="{{route('dashboard')}}">Dashboard</a>
                 </li>
                 <li class="breadcrumb-item">
-                  <a class="link-fx" href="{{route('products.index')}}">Products</a>
+                  <a class="link-fx" href="{{route('products.index')}}">Puppies</a>
                 </li>
                 <li class="breadcrumb-item" aria-current="page">
                   Create 
@@ -144,19 +144,19 @@
     <div class="content">
       <div class="block block-rounded mt-3">
         <div class="block-header block-header-default">
-          <h3 class="block-title">Product Data</h3>
+          <h3 class="block-title">Puppy Data</h3>
         </div>
         <div class="block-content">
           <div class="row">
             <div class="form-group col-md-4 mb-2">
-              <label>Product Name <span class="text-danger">*</span></label>
-              <input type="text" name="title" class="form-control light-fields input-sm" id="page-title" placeholder="Product Name" required>
+              <label>Puppy Name <span class="text-danger">*</span></label>
+              <input type="text" name="title" class="form-control light-fields input-sm" id="page-title" placeholder="Puppy Name" required>
               @csrf
             </div>
             <div class="form-group col-md-4 mb-2">
-              <label class="form-label">Product Slug <span class="text-danger">*</span></label>
+              <label class="form-label">Puppy Slug <span class="text-danger">*</span></label>
               <div class="slug-field">
-                  <input type="text" name="slug" class="form-control light-fields input-sm" id="page-slug" placeholder="Product Slug" required>
+                  <input type="text" name="slug" class="form-control light-fields input-sm" id="page-slug" placeholder="Puppy Slug" required>
                   <a href="javscript:;" class="text-dark" id="generateSlug"><i class="fa fa-refresh"></i></a>
               </div>
             </div>
@@ -189,7 +189,7 @@
               </select>
             </div>
             <div class="form-group col-md-4 mb-2">
-              <label class="form-label">Product Image <span class="text-danger">*</span></label>
+              <label class="form-label">Puppy Image <span class="text-danger">*</span></label>
               <div class="input-group pull-left">
                   <span class="input-group-btn">
                       <a data-input="image" class="btn btn-success image-placeholder" style="padding:7px 10px;"><i class="fa-solid fa-cloud-arrow-up"></i> Choose</a>
@@ -250,7 +250,7 @@
               <input type="date" class="form-control light-fields input-sm" name="age" />
             </div>
             <div class="form-group col-md-4 mb-2">
-              <label class="form-label">Product Listing Date</label>
+              <label class="form-label">Puppy Listing Date</label>
               <input type="date" class="form-control light-fields input-sm" name="product_listing" />
             </div>
             <div class="form-group col-md-4 mb-2">
@@ -302,7 +302,7 @@
     <div class="content">
       <div class="block block-rounded mt-3">
         <div class="block-header block-header-default">
-          <h3 class="block-title">Product Description</h3>
+          <h3 class="block-title">Puppy Description</h3>
         </div>
         <div class="block-content">
           <div class="row justify-content-center">
@@ -322,7 +322,7 @@
     <div class="content">
       <div class="block block-rounded mt-3">
         <div class="block-header block-header-default">
-          <h3 class="block-title">Product Gallery</h3>
+          <h3 class="block-title">Puppy Gallery</h3>
           <button type="button" class="btn btn-sm btn-outline-primary multiimage-placeholder" data-input="thumbnail" data-preview="holder"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
         </div>
         <div class="block-content">

@@ -1,5 +1,5 @@
 @extends('layouts.backend')
-@section('title', 'Products')
+@section('title', 'Puppies')
 @section('customStyles')
 <link rel="stylesheet" href="{{asset('assets_backend/js/plugins/sweetalert2/sweetalert2.min.css')}}">
 @endsection
@@ -12,7 +12,7 @@ $l_sort = $_GET['sort']??'desc';
       <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center py-2">
         <div class="flex-grow-1">
           <h1 class="h3 fw-bold mb-1">
-            Products
+            Puppies
           </h1>
           {{-- <h2 class="fs-base lh-base fw-medium text-muted mb-0">
             Multiple style options to match your preferences.
@@ -22,7 +22,7 @@ $l_sort = $_GET['sort']??'desc';
               <a class="link-fx" href="{{route('dashboard')}}">Dashboard</a>
             </li>
             <li class="breadcrumb-item" aria-current="page">
-              Products
+              Puppies
             </li>
           </ol>
         </div>
@@ -40,7 +40,7 @@ $l_sort = $_GET['sort']??'desc';
     @endif
     <div class="block block-rounded">
       <div class="block-header block-header-default">
-        <h3 class="block-title">All Products</h3>
+        <h3 class="block-title">All Puppies</h3>
         <div class="block-options">
           <div class="dropdown">
             <button type="button" class="btn-block-option" id="dropdown-ecom-filters" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -81,6 +81,7 @@ $l_sort = $_GET['sort']??'desc';
               <tr>
                 <th class="text-center" style="width: 100px;">ID</th>
                 <th class="d-none d-md-table-cell">Title</th>
+                <th class="d-none d-md-table-cell">Breed</th>
                 <th class="d-none d-sm-table-cell text-center">Added</th>
                 <th>Status</th>
                 <th class="text-center">Action</th>
@@ -124,6 +125,7 @@ $l_sort = $_GET['sort']??'desc';
                 <td class="d-none d-md-table-cell fs-sm">
                   <a href="{{route('products.edit', $v->id)}}">{{$v->title}}</a>
                 </td>
+                <td class="d-none d-md-table-cell fs-sm">{{$v->category->title}}</td>
                 <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('d/m/Y')}}</td>
                 <td>
                   @if($v->is_active==1)

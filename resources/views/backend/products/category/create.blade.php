@@ -1,5 +1,5 @@
 @extends('layouts.backend')
-@section('title', 'Create Category')
+@section('title', 'Create Breed')
 @section('customStyles')
 <style>
     .light-fields {
@@ -49,7 +49,7 @@
           <hr>
           <div class="row">
             <div class="col-md-3">
-              <label for="">Category Type</label>
+              <label for="">Breed Type</label>
                 <select name="category_type" class="form-control light-fields" required>
                     <option value="" selected disabled style="display:none">Select Any</option>
                     <option value="1">DOGS BREED</option>

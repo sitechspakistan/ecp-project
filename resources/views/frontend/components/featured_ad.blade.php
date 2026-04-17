@@ -2,6 +2,7 @@
     $products = getFeaturedProducts(1, ($meta['category_type'])??[], NULL, 1);
 @endphp
 
+@if(isset($products) && $products->count() > 0)
 <!-- Featured ADS Section -->
     <section class="featured-section">
     <div class="container">
@@ -81,3 +82,4 @@
     </div>
     </section>
 <!-- /Featured ADS Section -->
+ @endif

@@ -1,5 +1,5 @@
 @extends('layouts.backend')
-@section('title', 'Editing Category')
+@section('title', 'Editing Breed')
 @section('customStyles')
 <link rel="stylesheet" href="{{asset('assets_backend/css/components.css')}}" />
 <link rel="stylesheet" href="{{asset('assets_backend/css/bootstrap-tagsinput.css')}}" />
@@ -51,7 +51,7 @@
           <hr>
           <div class="row">
             <div class="col-md-3">
-              <label for="">Category Type</label>
+              <label for="">Breed Type</label>
                 <select name="category_type" class="form-control light-fields" required>
                     <option value="" selected disabled style="display:none">Select Any</option>
                     <option value="1" {{ (isset($data['category_type']) && $data['category_type'] === 1)?'selected':'' }}>DOGS BREED</option>

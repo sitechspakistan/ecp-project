@@ -39,6 +39,11 @@ $l_sort = $_GET['sort']??'desc';
         <em class="icon ni ni-check-circle"></em> <strong>{{Session::get('success')}}</strong>
     </div>
     @endif
+    @if ($errors->has('password'))
+    <div class="alert alert-danger alert-icon">
+        <em class="icon ni ni-cross-circle"></em> <strong>{{ $errors->first('password') }}</strong>
+    </div>
+    @endif
     <div class="block block-rounded">
       <div class="block-header block-header-default">
         <h3 class="block-title">All Sellers</h3>
@@ -92,7 +97,7 @@ $l_sort = $_GET['sort']??'desc';
                 <th class="d-none d-md-table-cell">No. of Puppies</th>
                 <th>Status</th>
                 <th class="d-none d-sm-table-cell text-center">Added</th>
-                {{-- <th class="text-center">Action</th> --}}
+                <th class="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -116,11 +121,11 @@ $l_sort = $_GET['sort']??'desc';
                     @endif
                   </td>
                 <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('d/m/Y')}}</td>
-                {{-- <td class="text-center fs-sm">       
-                    <a class="btn btn-sm btn-alt-secondary" href="{{route('users.seller.status', $v->id)}}" data-bs-toggle="tooltip" title="{{($v->is_active==1)?'Un-publish':'Publish'}}">
-                        <i class="fa fa-fw {{($v->is_active==1)?'fa-eye-slash':'fa-eye'}}"></i>
-                    </a>
-                </td> --}}
+                <td class="text-center fs-sm">
+                    <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-toggle="modal" data-bs-target="#sellerChangePasswordModal" data-password-url="{{ route('users.seller.password', $v->id) }}" data-seller-name="{{ $v->name }}" title="Change password">
+                        <i class="fa fa-fw fa-key"></i>
+                    </button>
+                </td>
               </tr>
               @endforeach
             </tbody>
@@ -134,6 +139,38 @@ $l_sort = $_GET['sort']??'desc';
     </div>
     <!-- END All Products -->
 </div>
+
+<div class="modal fade" id="sellerChangePasswordModal" tabindex="-1" role="dialog" aria-labelledby="sellerChangePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="sellerChangePasswordForm" method="POST" action="">
+        @csrf
+        <div class="modal-header">
+          <h5 class="modal-title" id="sellerChangePasswordModalLabel">Change password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted fs-sm mb-3" id="sellerChangePasswordSellerName"></p>
+          <div class="mb-3">
+            <label class="form-label" for="seller_new_password">New password</label>
+            <input type="password" class="form-control @error('password') is-invalid @enderror" id="seller_new_password" name="password" required autocomplete="new-password">
+            @error('password')
+              <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+          </div>
+          <div class="mb-0">
+            <label class="form-label" for="seller_new_password_confirmation">Confirm password</label>
+            <input type="password" class="form-control" id="seller_new_password_confirmation" name="password_confirmation" required autocomplete="new-password">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-alt-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 @endsection
 @section('customScripts')
 <!-- Page JS Helpers (Table Tools helpers) -->
@@ -141,6 +178,24 @@ $l_sort = $_GET['sort']??'desc';
 <script src="{{asset('assets_backend/js/plugins/bootstrap-notify/bootstrap-notify.min.js')}}"></script>
 <script src="{{asset('assets_backend/js/plugins/sweetalert2/sweetalert2.min.js')}}"></script>
 <script>
+  var sellerPwdModal = document.getElementById('sellerChangePasswordModal');
+  if (sellerPwdModal) {
+    sellerPwdModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      if (!button) return;
+      var url = button.getAttribute('data-password-url');
+      var name = button.getAttribute('data-seller-name') || '';
+      var form = document.getElementById('sellerChangePasswordForm');
+      var label = document.getElementById('sellerChangePasswordSellerName');
+      if (form && url) form.setAttribute('action', url);
+      if (label) label.textContent = name ? ('Seller: ' + name) : '';
+    });
+    sellerPwdModal.addEventListener('hidden.bs.modal', function () {
+      var form = document.getElementById('sellerChangePasswordForm');
+      if (form) form.reset();
+    });
+  }
+
   $(document).on('click','#deleteAll',function(e){
       if($('.checkItem').is(':checked')){
         Swal.fire({

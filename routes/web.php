@@ -195,6 +195,7 @@ Route::get('/products/delete/{id}', [ProductController::class, 'delete'])->name(
 
     Route::get('/sellers', [UserController::class, 'sellers'])->name('users.seller');
     Route::get('/sellers/{id}/status', [UserController::class, 'seller_status'])->name('users.seller.status');
+    Route::post('/sellers/{id}/password', [UserController::class, 'seller_password_update'])->name('users.seller.password');
     Route::post('/sellers/delete-all', [UserController::class, 'delete_sellers'])->name('users.seller.delete');
 
     Route::get('/activity-logs', [UserController::class, 'logs'])->name('logsPage');

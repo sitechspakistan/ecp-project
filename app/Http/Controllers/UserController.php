@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserGroups;
 use App\Models\UserLog;
+use Illuminate\Validation\Rules\Password;
 use Session;
 
 class UserController extends Controller
@@ -98,6 +99,20 @@ class UserController extends Controller
         $client = User::find($id);
         $client->is_active = ($client->is_active==1)?0:1;
         $client->save();
+        return redirect()->back();
+    }
+
+    public function seller_password_update(Request $request, $id)
+    {
+        $request->validate([
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        $user = User::where('id', $id)->where('user_type', 'seller')->firstOrFail();
+        $user->password = $request->password;
+        $user->save();
+
+        Session::flash('success', 'Password updated for '.$user->name);
         return redirect()->back();
     }
 
