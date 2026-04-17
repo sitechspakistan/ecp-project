@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\UserGroups;
+use App\Models\UserLog;
+use Session;
+
+class UserController extends Controller
+{
+    public function index(Request $request)
+    {
+        $sort = $request->sort??'DESC';
+        $limit = $request->limit??10;
+        if($request->has('q') && $request->q!='') {
+            $q = $request->q;
+            $data = User::where('title', 'LIKE', "%{$q}%")->where('group_id', "!=",null)->where('user_type', 'admin')->OrderBy('id', $sort)->paginate($limit);
+        } else {
+            $data = User::where('group_id', "!=",null)->where('user_type', 'admin')->OrderBy('id', $sort)->paginate($limit);
+        }
+        $groups = UserGroups::OrderBy('name')->get();
+        return view('backend.users.index', compact('data', 'groups'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->except('_token');
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        ]);
+        $data['user_type'] = 'admin';
+        $data['is_active'] = 1;
+        $data['password'] = bcrypt($request->password);
+        User::create($data);
+        Session::flash('success', 'User added successfully');
+        return redirect()->back();
+    }
+    
+    public function update($id, Request $request)
+    {
+        $data = $request->except('_token', 'password');
+        if($request->has('password') && $request->password!='') {
+            $data['password'] = bcrypt($request->password);
+        }
+        $data['user_type'] = 'admin';
+        User::find($id)->update($data);
+        Session::flash('success', 'User update successfully');
+        return redirect()->back();
+    }
+
+    public function status($id)
+    {
+        $client = User::find($id);
+        $client->is_active = ($client->is_active==1)?0:1;
+        $client->save();
+        return redirect()->back();
+    }
+
+    public function delete(Request $request)
+    {
+        $count = count($request->ids);
+        User::destroy($request->ids);
+        Session::flash('success', "{$count} users(s) deleted");
+        return redirect()->back();
+    }
+
+    public function logs(Request $request)
+    {
+        $sort = $request->sort??'DESC';
+        $limit = $request->limit??10;
+        if($request->has('q') && $request->q!='') {
+            $q = $request->q;
+            $data = UserLog::where('description', 'LIKE', "%{$q}%")->OrderBy('id', $sort)->paginate($limit);
+        } else {
+            $data = UserLog::OrderBy('id', $sort)->paginate($limit);
+        }
+        return view('backend.users.logs', compact('data'));
+    }
+
+    public function sellers(Request $request)
+    {
+        $sort = $request->sort??'DESC';
+        $limit = $request->limit??10;
+        if($request->has('q') && $request->q!='') {
+            $q = $request->q;
+            $data = User::where('title', 'LIKE', "%{$q}%")->where('user_type', 'seller')->OrderBy('id', $sort)->paginate($limit);
+        } else {
+            $data = User::where('user_type', 'seller')->OrderBy('id', $sort)->paginate($limit);
+        }
+        return view('backend.users.sellers', compact('data'));
+    }
+
+    public function seller_status($id)
+    {
+        $client = User::find($id);
+        $client->is_active = ($client->is_active==1)?0:1;
+        $client->save();
+        return redirect()->back();
+    }
+
+    public function delete_sellers(Request $request)
+    {
+        $count = count($request->ids);
+        User::destroy($request->ids);
+        Session::flash('success', "{$count} seller(s) deleted");
+        return redirect()->back();
+    }
+}
