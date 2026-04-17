@@ -322,6 +322,29 @@
                             </div>
                         </div>
 
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>SEO</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label class="col-form-label">Meta title</label>
+                                        <input type="text" class="form-control pass-input" name="meta_title" placeholder="Meta title" value="{{ $product->meta_title ?? '' }}">
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <label class="col-form-label">Meta description</label>
+                                        <textarea class="form-control pass-input" name="meta_description" rows="4" placeholder="Meta description">{{ $product->meta_description ?? '' }}</textarea>
+                                    </div>
+                                    <div class="col-md-12 form-group mb-0">
+                                        <label class="col-form-label">Meta keywords</label>
+                                        <input type="text" class="form-control pass-input" name="seo_meta[meta_tags]" placeholder="e.g. puppy, breed, for sale (comma-separated)" value="{{ data_get($product->seo_meta, 'meta_tags', '') }}">
+                                        <input type="hidden" name="seo_meta[is_tags]" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="card media-section">
                             <div class="card-header">
                                 <h4>Media Information</h4>

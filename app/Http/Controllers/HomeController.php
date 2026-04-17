@@ -652,6 +652,11 @@ class HomeController extends Controller
             $data['is_featured'] = 1;
         }
 
+        if ($request->has('seo_meta') && is_array($request->input('seo_meta'))) {
+            $existingSeo = is_array($product->seo_meta) ? $product->seo_meta : [];
+            $data['seo_meta'] = array_merge($existingSeo, $request->input('seo_meta'));
+        }
+
         Products::find($request->id)->update($data);
         Session::flash('success', 'Item updated successfully');
         return redirect()->route('mylisting');
