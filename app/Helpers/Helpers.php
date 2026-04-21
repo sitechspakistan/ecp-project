@@ -5,6 +5,7 @@ use App\Models\Blogs;
 use App\Models\Testimonials;
 use App\Models\Menu;
 use App\Models\MenuItems;
+use App\Models\Membership;
 use App\Models\Services;
 use App\Models\Albums;
 use App\Models\Configurations;
@@ -205,6 +206,26 @@ function getProducts($featured, $category_type = [], $limit = null, $latest = 0)
     return $product;
 }
 
+function featuredSellerMembershipCodes() {
+    $defaultCodes = [1, 2, 3];
+
+    try {
+        $codes = Membership::where('user_type', 'seller')
+            ->where('is_active', 1)
+            ->where('is_featured_eligible', 1)
+            ->orderBy('code')
+            ->pluck('code')
+            ->map(function ($code) {
+                return (int) $code;
+            })
+            ->toArray();
+
+        return count($codes) > 0 ? $codes : $defaultCodes;
+    } catch (\Throwable $e) {
+        return $defaultCodes;
+    }
+}
+
 function productDetailUrl($product){
     if (!empty($product->category) && !empty($product->category->slug)) {
         return route('productDetail', [
@@ -343,7 +364,7 @@ function getFeaturedProducts($featured, $category_type = [], $limit = null, $lat
     $product = Products::with('location','category','reviews','bookmarks')
                     ->where('is_active', 1)
                     ->whereHas('user', function ($query) {
-                        $query->whereIn('membership_id', [1, 2, 3])
+                        $query->whereIn('membership_id', featuredSellerMembershipCodes())
                               ->where('expiry_date', '>', now());
                     });
                     

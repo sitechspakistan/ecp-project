@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderDetail;
+use App\Models\Membership;
 use App\Models\Orders;
 use App\Models\ProductMessage;
 use App\Models\Products;
@@ -255,11 +256,30 @@ class CartController extends Controller
         if($order->order_type === 'membership'){
             $userdata = [];
             $user = User::find($order->user_id);
+            $membership = null;
+            if (isset($order->membership_details['code'])) {
+                $membership = Membership::where('code', $order->membership_details['code'])
+                    ->where('is_active', 1)
+                    ->first();
+            }
 
-            $userdata['membership_id'] = $order->membership_details['code'];
+            $membershipCode = $membership->code ?? ($order->membership_details['code'] ?? 4);
+            $durationValue = $membership ? max((int) $membership->duration_value, 1) : 1;
+            $durationType = $membership->duration_type ?? 'month';
+
+            $expiry = Carbon::now();
+            if ($durationType === 'day') {
+                $expiry->addDays($durationValue);
+            } elseif ($durationType === 'year') {
+                $expiry->addYears($durationValue);
+            } else {
+                $expiry->addMonths($durationValue);
+            }
+
+            $userdata['membership_id'] = $membershipCode;
             $userdata['start_date'] = Carbon::now()->format('Y-m-d');
-            $userdata['expiry_date'] = Carbon::now()->addMonth(1)->format('Y-m-d');
-            $userdata['membership_title'] = $order->membership_details['title'];
+            $userdata['expiry_date'] = $expiry->format('Y-m-d');
+            $userdata['membership_title'] = $membership->title ?? ($order->membership_details['title'] ?? 'Free (Seller)');
 
             $user->update($userdata);
         }else{
@@ -298,9 +318,24 @@ class CartController extends Controller
     }
 
     public function purchase_membership(Request $request){
-
-        $data = $request->except('_token');
         $qty = 1;
+        $request->validate([
+            'membership_code' => 'required|integer',
+        ]);
+
+        $membership = Membership::where('code', (int) $request->membership_code)
+            ->where('is_active', 1)
+            ->firstOrFail();
+
+        $data = [];
+        $data['membership_details'] = [
+            'id' => $membership->id,
+            'code' => $membership->code,
+            'title' => $membership->title,
+            'price' => (float) $membership->price,
+            'type' => $membership->duration_type,
+            'duration' => $membership->duration_value,
+        ];
 
         $data['order_no'] = rand(1000, 999999);
         $data['payment_type'] = 'stripe';
@@ -308,9 +343,7 @@ class CartController extends Controller
         $data['order_status'] = 'pending';
         $data['order_type'] = 'membership';
         $data['user_id'] = Auth::user()->id;
-        $data['order_total_amount'] = $data['membership_details']['price']*$qty;
-
-        
+        $data['order_total_amount'] = $data['membership_details']['price'] * $qty;
 
         require_once(public_path('stripe-php/init.php'));        
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));

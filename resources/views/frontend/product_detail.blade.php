@@ -117,7 +117,7 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                                 <h6>{{Auth::user()->name}}</h6>
                                 <p><strong>Phone No: </strong><small>{{Auth::user()->name}}</small></p>
                                 <p><strong>Email: </strong><small>{{Auth::user()->email}}</small></p>
-                                <p><strong>Member Since: </strong><small>{{ Carbon\Carbon::parse(Auth::user()->created_at)->format('M Y') }}</small></p>
+                                <p><strong>Member Since: </strong><small>{{ Carbon\Carbon::parse(Auth::user()->created_at)->format('m/d/Y') }}</small></p>
                                 <p><strong>Location: </strong> <small class="text-info">{{Auth::user()->city}}, {{Auth::user()->state}}, {{Auth::user()->country}}</small></p>
                               </div>
                             </div>
@@ -192,7 +192,7 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                         @if(isset($data->age))
                             <tr>
                             <td><strong>Age:</strong></td>
-                            <td>{{Carbon\Carbon::parse($data->age)->format('d/m/Y')}}</td>
+                            <td>{{Carbon\Carbon::parse($data->age)->format('m/d/Y')}}</td>
                             </tr>
                         @endif
                         @if(isset($data->color_markings))
@@ -222,13 +222,13 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                         @if(isset($data->product_listing))
                             <tr>
                             <td><strong>Availability Date:</strong></td>
-                            <td>{{Carbon\Carbon::parse($data->product_listing)->format('d/m/Y')}}</td>
+                            <td>{{Carbon\Carbon::parse($data->product_listing)->format('m/d/Y')}}</td>
                             </tr>
                         @endif
                         @if(isset($data->photo_date))
                             <tr>
                             <td><strong>Date Of Photograph:</strong></td>
-                            <td>{{Carbon\Carbon::parse($data->photo_date)->format('d/m/Y')}}</td>
+                            <td>{{Carbon\Carbon::parse($data->photo_date)->format('m/d/Y')}}</td>
                             </tr>
                         @endif
                         @if(isset($data->location_id))
@@ -479,7 +479,7 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                                                 </div>
                                             <div>
                                                 <i class="fa-sharp fa-solid fa-calendar-days"></i>
-                                                {{ Carbon\Carbon::parse($review->created_at)->diffForHumans(); }}
+                                                {{ Carbon\Carbon::parse($review->created_at)->format('m/d/Y'); }}
                                             </div>
                                             </div>
                                             <br><br>
@@ -650,7 +650,7 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                         </h6>
                         <div class="blog-location-details">
                           <div class="location-info">
-                            <i class="fa-regular fa-calendar-days"></i> {{ Carbon\Carbon::parse($product->product_listing)->format('d M, Y') }}
+                            <i class="fa-regular fa-calendar-days"></i> {{ Carbon\Carbon::parse($product->product_listing)->format('m/d/Y') }}
                           </div>
                         </div>
                         <div class="amount-details">

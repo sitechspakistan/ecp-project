@@ -12,14 +12,14 @@ $l_sort = $_GET['sort']??'desc';
       <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center py-2">
         <div class="flex-grow-1">
           <h1 class="h3 fw-bold mb-1">
-            Sellers
+            Sellers & Buyers
           </h1>
           <ol class="breadcrumb breadcrumb-alt">
             <li class="breadcrumb-item">
               <a class="link-fx" href="{{route('dashboard')}}">Dashboard</a>
             </li>
             <li class="breadcrumb-item" aria-current="page">
-              Sellers
+              Sellers & Buyers
             </li>
           </ol>
         </div>
@@ -44,9 +44,24 @@ $l_sort = $_GET['sort']??'desc';
         <em class="icon ni ni-cross-circle"></em> <strong>{{ $errors->first('password') }}</strong>
     </div>
     @endif
+    @if ($errors->has('expiry_date'))
+    <div class="alert alert-danger alert-icon">
+        <em class="icon ni ni-cross-circle"></em> <strong>{{ $errors->first('expiry_date') }}</strong>
+    </div>
+    @endif
+    @if ($errors->has('membership_id'))
+    <div class="alert alert-danger alert-icon">
+        <em class="icon ni ni-cross-circle"></em> <strong>{{ $errors->first('membership_id') }}</strong>
+    </div>
+    @endif
+    @if ($errors->has('start_date'))
+    <div class="alert alert-danger alert-icon">
+        <em class="icon ni ni-cross-circle"></em> <strong>{{ $errors->first('start_date') }}</strong>
+    </div>
+    @endif
     <div class="block block-rounded">
       <div class="block-header block-header-default">
-        <h3 class="block-title">All Sellers</h3>
+        <h3 class="block-title">All Sellers & Buyers</h3>
         <div class="block-options">
           <div class="dropdown">
             <button type="button" class="btn-block-option" id="dropdown-ecom-filters" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -94,6 +109,7 @@ $l_sort = $_GET['sort']??'desc';
                 <th class="d-none d-md-table-cell">Name</th>
                 <th class="d-none d-md-table-cell">Email</th>
                 <th class="d-none d-md-table-cell">Membership</th>
+                <th class="d-none d-md-table-cell">Expiry Date</th>
                 <th class="d-none d-md-table-cell">No. of Puppies</th>
                 <th>Status</th>
                 <th class="d-none d-sm-table-cell text-center">Added</th>
@@ -112,6 +128,7 @@ $l_sort = $_GET['sort']??'desc';
                 <td class="d-none d-md-table-cell fs-sm">{{$v->name}}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{$v->email}}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{$v->membership_title??''}}</td>
+                <td class="d-none d-md-table-cell fs-sm">{{ !empty($v->expiry_date) ? \Carbon\Carbon::parse($v->expiry_date)->format('d/m/Y') : '-' }}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{$v->products->count()??''}}</td>
                 <td>
                     @if($v->is_active==1)
@@ -124,6 +141,9 @@ $l_sort = $_GET['sort']??'desc';
                 <td class="text-center fs-sm">
                     <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-toggle="modal" data-bs-target="#sellerChangePasswordModal" data-password-url="{{ route('users.seller.password', $v->id) }}" data-seller-name="{{ $v->name }}" title="Change password">
                         <i class="fa fa-fw fa-key"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-alt-primary" data-bs-toggle="modal" data-bs-target="#sellerMembershipExpiryModal" data-expiry-url="{{ route('users.seller.membership.expiry', $v->id) }}" data-user-name="{{ $v->name }}" data-membership-id="{{ $v->membership_id }}" data-start-date="{{ $v->start_date }}" data-expiry-date="{{ $v->expiry_date }}" title="Update membership">
+                        <i class="fa fa-fw fa-calendar"></i>
                     </button>
                 </td>
               </tr>
@@ -138,6 +158,53 @@ $l_sort = $_GET['sort']??'desc';
       </div>
     </div>
     <!-- END All Products -->
+</div>
+
+<div class="modal fade" id="sellerMembershipExpiryModal" tabindex="-1" role="dialog" aria-labelledby="sellerMembershipExpiryModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="sellerMembershipExpiryForm" method="POST" action="">
+        @csrf
+        <div class="modal-header">
+          <h5 class="modal-title" id="sellerMembershipExpiryModalLabel">Update membership</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted fs-sm mb-3" id="sellerMembershipExpiryUserName"></p>
+          <div class="mb-3">
+            <label class="form-label" for="membership_id">Membership</label>
+            <select class="form-control @error('membership_id') is-invalid @enderror" id="membership_id" name="membership_id" required>
+              <option value="" disabled selected>Select membership</option>
+              @foreach($memberships as $membership)
+                <option value="{{ $membership->id }}" data-code="{{ $membership->code }}">{{ $membership->title }}</option>
+              @endforeach
+            </select>
+            @error('membership_id')
+              <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="membership_start_date">From date</label>
+            <input type="date" class="form-control @error('start_date') is-invalid @enderror" id="membership_start_date" name="start_date" required>
+            @error('start_date')
+              <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+          </div>
+          <div class="mb-0">
+            <label class="form-label" for="membership_expiry_date">Expiry date</label>
+            <input type="date" class="form-control @error('expiry_date') is-invalid @enderror" id="membership_expiry_date" name="expiry_date" required>
+            @error('expiry_date')
+              <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-alt-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update membership</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="sellerChangePasswordModal" tabindex="-1" role="dialog" aria-labelledby="sellerChangePasswordModalLabel" aria-hidden="true">
@@ -192,6 +259,40 @@ $l_sort = $_GET['sort']??'desc';
     });
     sellerPwdModal.addEventListener('hidden.bs.modal', function () {
       var form = document.getElementById('sellerChangePasswordForm');
+      if (form) form.reset();
+    });
+  }
+
+  var sellerExpiryModal = document.getElementById('sellerMembershipExpiryModal');
+  if (sellerExpiryModal) {
+    sellerExpiryModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      if (!button) return;
+      var url = button.getAttribute('data-expiry-url');
+      var name = button.getAttribute('data-user-name') || '';
+      var membershipCode = button.getAttribute('data-membership-id') || '';
+      var startDate = button.getAttribute('data-start-date') || '';
+      var expiryDate = button.getAttribute('data-expiry-date') || '';
+      var form = document.getElementById('sellerMembershipExpiryForm');
+      var label = document.getElementById('sellerMembershipExpiryUserName');
+      var membershipInput = document.getElementById('membership_id');
+      var startDateInput = document.getElementById('membership_start_date');
+      var dateInput = document.getElementById('membership_expiry_date');
+      if (form && url) form.setAttribute('action', url);
+      if (label) label.textContent = name ? ('User: ' + name) : '';
+      if (membershipInput) {
+        membershipInput.value = '';
+        Array.prototype.forEach.call(membershipInput.options, function(option) {
+          if (option.getAttribute('data-code') === String(membershipCode)) {
+            membershipInput.value = option.value;
+          }
+        });
+      }
+      if (startDateInput) startDateInput.value = startDate;
+      if (dateInput) dateInput.value = expiryDate;
+    });
+    sellerExpiryModal.addEventListener('hidden.bs.modal', function () {
+      var form = document.getElementById('sellerMembershipExpiryForm');
       if (form) form.reset();
     });
   }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Membership;
 use App\Models\User;
 use App\Models\UserGroups;
 use App\Models\UserLog;
@@ -85,13 +86,19 @@ class UserController extends Controller
     {
         $sort = $request->sort??'DESC';
         $limit = $request->limit??10;
+        $query = User::whereIn('user_type', ['seller', 'buyer']);
+
         if($request->has('q') && $request->q!='') {
             $q = $request->q;
-            $data = User::where('title', 'LIKE', "%{$q}%")->where('user_type', 'seller')->OrderBy('id', $sort)->paginate($limit);
-        } else {
-            $data = User::where('user_type', 'seller')->OrderBy('id', $sort)->paginate($limit);
+            $query->where(function ($innerQuery) use ($q) {
+                $innerQuery->where('name', 'LIKE', "%{$q}%")
+                    ->orWhere('email', 'LIKE', "%{$q}%");
+            });
         }
-        return view('backend.users.sellers', compact('data'));
+
+        $data = $query->OrderBy('id', $sort)->paginate($limit);
+        $memberships = Membership::where('is_active', 1)->orderBy('code')->get();
+        return view('backend.users.sellers', compact('data', 'memberships'));
     }
 
     public function seller_status($id)
@@ -108,11 +115,32 @@ class UserController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        $user = User::where('id', $id)->where('user_type', 'seller')->firstOrFail();
+        $user = User::where('id', $id)->whereIn('user_type', ['seller', 'buyer'])->firstOrFail();
         $user->password = $request->password;
         $user->save();
 
         Session::flash('success', 'Password updated for '.$user->name);
+        return redirect()->back();
+    }
+
+    public function seller_membership_expiry_update(Request $request, $id)
+    {
+        $request->validate([
+            'membership_id' => ['required', 'integer', 'exists:memberships,id'],
+            'start_date' => ['required', 'date'],
+            'expiry_date' => ['required', 'date', 'after_or_equal:start_date'],
+        ]);
+
+        $user = User::where('id', $id)->whereIn('user_type', ['seller', 'buyer'])->firstOrFail();
+        $membership = Membership::findOrFail($request->membership_id);
+
+        $user->membership_id = $membership->code;
+        $user->membership_title = $membership->title;
+        $user->start_date = $request->start_date;
+        $user->expiry_date = $request->expiry_date;
+        $user->save();
+
+        Session::flash('success', 'Membership updated for '.$user->name);
         return redirect()->back();
     }
 

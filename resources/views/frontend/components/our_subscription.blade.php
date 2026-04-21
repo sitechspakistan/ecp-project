@@ -10,38 +10,39 @@
     </div>
     <div class="container">
         <div class="row">
-
-            @if(isset($meta['subs']) && count($meta['subs']) > 0)
-                @foreach($meta['subs'] as $k => $subscription)
+            @php
+                $activeMemberships = \App\Models\Membership::where('is_active', 1)->orderBy('code')->get();
+            @endphp
+            @if($activeMemberships->count() > 0)
+                @foreach($activeMemberships as $k => $membership)
                     <div class="col-lg-3 d-flex col-md-6">
                         <div class="price-card flex-fill">
                             <div class="price-head">
                                 <div class="price-level">
-                                    @if(isset($subscription['heading']))<h6>{{ $subscription['heading'] }}</h6>@endif
+                                    <h6>{{ $membership->title }}</h6>
                                 </div>
-                                @if(isset($subscription['price']))<h4>${{ ($subscription['price'])??0 }}<span>/{{ ($subscription['type'])??'' }}</span></h4>@endif
+                                @php
+                                    $price = (float) $membership->price;
+                                    $formattedPrice = ($price == floor($price)) ? number_format($price, 0) : number_format($price, 2);
+                                @endphp
+                                <h4>${{ $formattedPrice }}<span>/{{ $membership->duration_type }}</span></h4>
                             </div>
                             <div class="price-body">
-                                @if(isset($subscription['price']))
-                                    <p>
-                                        {{ ($subscription['txt'])??'' }}
-                                    </p>
-                                @endif
+                                <p>
+                                    {{ $membership->description ?: ($membership->duration_value.' '.$membership->duration_type.' membership for '.ucfirst($membership->user_type).'.') }}
+                                </p>
 
                                 <div>
-                                <form method="POST" id="MemberShipPurchase{{ $k }}" action="{{ route('purchase_membership') }}">
+                                <form method="POST" id="MemberShipPurchase{{ $membership->id }}" action="{{ route('purchase_membership') }}">
                                     @csrf
-                                    <input type="hidden" name="membership_details[title]" value="{{ ($subscription['heading'])??'' }}" />
-                                    <input type="hidden" name="membership_details[price]" value="{{ ($subscription['price'])??0 }}" />
-                                    <input type="hidden" name="membership_details[type]" value="{{ ($subscription['type'])??'' }}" />
-                                    <input type="hidden" name="membership_details[code]" value="{{ $k+1 }}" />
+                                    <input type="hidden" name="membership_code" value="{{ $membership->code }}" />
                                 </form>
                                 <a
                                     class="btn viewdetails-btn sub-button"
                                     data-type="general"
                                     href="javascript:;"
-                                    onclick="event.preventDefault(); document.getElementById('MemberShipPurchase{!! $k !!}').submit();"
-                                    >{{ ($subscription['btn_txt'])??'' }}</a
+                                    onclick="event.preventDefault(); document.getElementById('MemberShipPurchase{{ $membership->id }}').submit();"
+                                    >{{ $membership->btn_txt ?: 'Choose Plan' }}</a
                                 >
                                 </div>
                             </div>

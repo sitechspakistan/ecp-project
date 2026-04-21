@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <div class="col-md-12">
+            {{-- <div class="col-md-12">
                 <div class="row">
                     @for ($x=0; $x<=3; $x++)
                         <div class="col-md-3">
@@ -40,7 +40,7 @@
                                 <input type="text" placeholder="Subscription {{$x+1}} Price" class="form-control" name="components[{{$rand}}][our_subscription][subs][{{$x}}][price]" value="{{$meta['subs'][$x]['price']??''}}">
                             </div>
                             <input type="hidden" name="components[{{$rand}}][our_subscription][subs][{{$x}}][type]" value="month" />
-                            {{-- <div class="form-group mb-2">
+                            <div class="form-group mb-2">
                                 <input type="number" placeholder="Subscription {{$x+1}} Duration" class="form-control" name="components[{{$rand}}][our_subscription][subs][{{$x}}][duration]" value="{{$meta['subs'][$x]['duration']??''}}">
                             </div>
                             <div class="form-group mb-2">
@@ -50,7 +50,7 @@
                                     <option value="month" @if(isset($meta['subs'][$x]['type']) && $meta['subs'][$x]['type'] === 'month') selected @endif>Month</option>
                                     <option value="year" @if(isset($meta['subs'][$x]['type']) && $meta['subs'][$x]['type'] === 'year') selected @endif>Year</option>
                                 </select>
-                            </div> --}}
+                            </div>
                             <div class="form-group mb-2">
                                 <input type="text" placeholder="Subscription {{$x+1}} Button Text" class="form-control" name="components[{{$rand}}][our_subscription][subs][{{$x}}][btn_txt]" value="{{$meta['subs'][$x]['btn_txt']??''}}">
                             </div>
@@ -60,7 +60,7 @@
                         </div>
                     @endfor
                 </div>
-            </div>
+            </div> --}}
 
         </div>
         <hr>        

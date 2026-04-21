@@ -24,6 +24,7 @@ use App\Http\Controllers\InboxController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\MembershipController;
 use App\Http\Middleware\AllowForAdmin;
 use App\Http\Middleware\CheckLoginRequired;
 use App\Http\Middleware\FrontAuth;
@@ -196,7 +197,17 @@ Route::get('/products/delete/{id}', [ProductController::class, 'delete'])->name(
     Route::get('/sellers', [UserController::class, 'sellers'])->name('users.seller');
     Route::get('/sellers/{id}/status', [UserController::class, 'seller_status'])->name('users.seller.status');
     Route::post('/sellers/{id}/password', [UserController::class, 'seller_password_update'])->name('users.seller.password');
+    Route::post('/sellers/{id}/membership-expiry', [UserController::class, 'seller_membership_expiry_update'])->name('users.seller.membership.expiry');
     Route::post('/sellers/delete-all', [UserController::class, 'delete_sellers'])->name('users.seller.delete');
+
+    /* Memberships Routes */
+    Route::get('/memberships', [MembershipController::class, 'index'])->name('memberships.index');
+    Route::get('/memberships/create', [MembershipController::class, 'create'])->name('memberships.create');
+    Route::post('/memberships/store', [MembershipController::class, 'store'])->name('memberships.store');
+    Route::get('/memberships/{id}/edit', [MembershipController::class, 'edit'])->name('memberships.edit');
+    Route::post('/memberships/{id}/update', [MembershipController::class, 'update'])->name('memberships.update');
+    Route::get('/memberships/{id}/status', [MembershipController::class, 'status'])->name('memberships.status');
+    Route::post('/memberships/delete-all', [MembershipController::class, 'delete'])->name('memberships.delete');
 
     Route::get('/activity-logs', [UserController::class, 'logs'])->name('logsPage');
 

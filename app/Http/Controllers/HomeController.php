@@ -538,7 +538,7 @@ class HomeController extends Controller
         $data['health_record'] = ($request->health_record === 'on' || $request->health_record === 1)?1:0;
         $data['health_warranty'] = ($request->health_warranty === 'on' || $request->health_warranty === 1)?1:0;
         
-        if((Auth::user()->membership_id == 1 || Auth::user()->membership_id == 2 || Auth::user()->membership_id == 3) && Carbon::parse(Auth::user()->expiry_date)->format('Y-m-d') >= Carbon::now()->format('Y-m-d')){
+        if(in_array((int) Auth::user()->membership_id, featuredSellerMembershipCodes(), true) && Carbon::parse(Auth::user()->expiry_date)->format('Y-m-d') >= Carbon::now()->format('Y-m-d')){
             $data['is_featured'] = 1;
         }
         
@@ -648,7 +648,7 @@ class HomeController extends Controller
         $data['user_id'] = Auth::user()->id;
         $data['health_warranty'] = ($request->health_warranty === 'on' || $request->health_warranty === 'yes' || $request->health_warranty === 1)?1:0;
         
-        if((Auth::user()->membership_id == 1 || Auth::user()->membership_id == 2 || Auth::user()->membership_id == 3) && Carbon::parse(Auth::user()->expiry_date)->format('Y-m-d') >= Carbon::now()->format('Y-m-d')){
+        if(in_array((int) Auth::user()->membership_id, featuredSellerMembershipCodes(), true) && Carbon::parse(Auth::user()->expiry_date)->format('Y-m-d') >= Carbon::now()->format('Y-m-d')){
             $data['is_featured'] = 1;
         }
 

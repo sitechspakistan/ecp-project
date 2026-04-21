@@ -69,12 +69,17 @@
                 </select>
             </div>
             <div class="col-md-3">
+              @php
+                $activeMemberships = \App\Models\Membership::where('is_active', 1)->orderBy('code')->get();
+                $selectedMemberships = array_map('strval', $data['memberships'] ?? []);
+              @endphp
               <select name="memberships[]" class="form-control select2 light-fields" multiple>
                 {{-- <option value="" disabled selected style="display:none">Required Membership</option> --}}
-                <option value="1" @if(isset($data['memberships']) && in_array('1', $data['memberships'])) selected @endif>General (Buyer)</option>
-                <option value="2" @if(isset($data['memberships']) && in_array('2', $data['memberships'])) selected @endif>Premium (Seller)</option>
-                <option value="3" @if(isset($data['memberships']) && in_array('3', $data['memberships'])) selected @endif>Basic (Seller)</option>
-                <option value="4" @if(isset($data['memberships']) && in_array('4', $data['memberships'])) selected @endif>Free (Seller)</option>
+                @foreach($activeMemberships as $membership)
+                  <option value="{{ $membership->code }}" @if(in_array((string) $membership->code, $selectedMemberships)) selected @endif>
+                    {{ $membership->title }}
+                  </option>
+                @endforeach
               </select>
             </div>
             <div class="col-md-1">

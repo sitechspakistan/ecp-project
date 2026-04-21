@@ -204,6 +204,11 @@
               </a>
             </li>
             <li class="nav-main-item">
+              <a class="nav-main-link" href="{{route('memberships.index')}}">
+                <span class="nav-main-link-name">Memberships</span>
+              </a>
+            </li>
+            <li class="nav-main-item">
               <a class="nav-main-link" href="{{route('usergroups.index')}}">
                 <span class="nav-main-link-name">Groups</span>
               </a>

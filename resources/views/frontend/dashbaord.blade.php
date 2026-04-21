@@ -141,7 +141,28 @@
                                     </ul>								
                                 </div>								
                             </div>							 
-                        </div>					
+                        </div>
+                        <div class="col-lg-6 d-flex">
+                            @php
+                                $membershipTitle = Auth::user()->membership_title ?? 'No Active Plan';
+                                $expiryDate = !empty(Auth::user()->expiry_date) ? \Carbon\Carbon::parse(Auth::user()->expiry_date)->format('m/d/Y') : 'N/A';
+                                $isMembershipActive = !empty(Auth::user()->expiry_date) && \Carbon\Carbon::parse(Auth::user()->expiry_date)->endOfDay()->gte(\Carbon\Carbon::now());
+                            @endphp
+                            <div class="card dash-cards w-100">
+                                <div class="card-header">
+                                    <h4 class="mb-0">
+                                        @if(!empty(Auth::user()->expiry_date))
+                                            (Subscription Expires: {{ $expiryDate }})
+                                        @endif
+                                    </h4>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-3">Hello, <strong>{{ Auth::user()->email }}</strong> welcome!</p>
+                                    <p class="mb-3">You are currently on <strong>{{ $membershipTitle }}</strong>.</p>
+                                    <p class="mb-3">You have listed <strong>{{ ($activeListing)??0 }}</strong> puppies!</p>
+                                </div>
+                            </div>
+                        </div>		
                     </div> 					
                 </div>				
             </div>				
