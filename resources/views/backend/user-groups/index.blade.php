@@ -103,7 +103,7 @@ $l_sort = $_GET['sort']??'desc';
                 </td>                
                 <td class="d-none d-md-table-cell fs-sm">{{$v->name}}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{$v->users->count()}}</td>
-                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('d/m/Y')}}</td>
+                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('m/d/Y')}}</td>
                 <td class="text-center fs-sm">                  
                   <a class="btn btn-sm btn-alt-secondary" href="{{route('usergroups.edit', $v->id)}}" data-bs-toggle="tooltip" title="Edit">
                     <i class="fa fa-fw fa-pencil"></i>

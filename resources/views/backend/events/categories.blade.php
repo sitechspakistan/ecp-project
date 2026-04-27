@@ -102,7 +102,7 @@ $l_sort = $_GET['sort']??'desc';
                   </div>
                 </td>                
                 <td class="d-none d-md-table-cell fs-sm">{{$v->title}}</td>
-                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('d/m/Y')}}</td>
+                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('m/d/Y')}}</td>
                 <td>
                   @if($v->is_active==1)
                   <span class="badge bg-success">Published</span>

@@ -88,6 +88,11 @@ class Products extends Model
         return $this->hasMany(ProductBookmark::class, 'product_id', 'id');
     }
 
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class, 'coupon_products', 'product_id', 'coupon_id');
+    }
+
     public function setLinkCanonicalsAttribute($value)
     {
     	$this->attributes['link_canonicals'] = json_encode($value);

@@ -113,7 +113,7 @@ $l_sort = $_GET['sort']??'desc';
                     <span class="badge bg-warning">Draft</span>
                     @endif
                   </td>
-                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('d/m/Y')}}</td>
+                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('m/d/Y')}}</td>
                 <td class="text-center fs-sm">       
                     <a class="btn btn-sm btn-alt-secondary" href="{{route('users.status', $v->id)}}" data-bs-toggle="tooltip" title="{{($v->is_active==1)?'Un-publish':'Publish'}}">
                         <i class="fa fa-fw {{($v->is_active==1)?'fa-eye-slash':'fa-eye'}}"></i>

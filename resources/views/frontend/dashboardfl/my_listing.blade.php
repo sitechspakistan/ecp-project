@@ -92,7 +92,7 @@
                                                                 <h6><a href="{{ productDetailUrl($product) }}">{{ productTitleWithCategory($product) }}</a></h6>
                                                             </td>
                                                             <td><Span class="views-count">${{ number_format(($product->sell_price)??0, 2) }}</span></td>
-                                                            <td>{{ date('d-m-Y H:i:s', strtotime($product->created_at)) }}</td>
+                                                            <td>{{ $product->created_at->format('m/d/Y H:i:s') }}</td>
                                                             <td>
                                                                 <div class="action">
                                                                     <a href="{{route('product.edit', $product->id)}}" class="action-btn btn-edit"><i class="feather-edit-3"></i></a>

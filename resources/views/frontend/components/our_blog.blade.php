@@ -56,7 +56,7 @@
                                     </li>
                                 @endif
                             <li class="date-icon">
-                                <i class="fa-solid fa-calendar-days"></i> {{ Carbon\Carbon::parse($blog->created_at)->format('d M, Y') }}
+                                <i class="fa-solid fa-calendar-days"></i> {{ Carbon\Carbon::parse($blog->created_at)->format('m/d/Y') }}
                             </li>
                             </ul>
                             <h3 class="blog-title">

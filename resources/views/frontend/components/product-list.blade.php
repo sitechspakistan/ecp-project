@@ -1,11 +1,21 @@
 @php
-    $cat_id = ($_GET['cat_id'])??NULL;
-    $sort_by = ($_GET['sort_by'])??'DESC';
-    $sort_column = ($_GET['sort_column'])??'created_at';
-    $page = ($_GET['page'])??1;
+    $cat_id = request('cat_id');
+    $sort_by = request('sort_by', 'DESC');
+    $sort_column = request('sort_column', 'created_at');
+    $page = request('page', 1);
     $no_of_record = ($meta['no_of_record'])??6;
-    
-    $products = getProductPage($cat_id,$sort_by,$sort_column,$page,$no_of_record);
+    $price_min = request('price_min');
+    $price_max = request('price_max');
+    $availability = request('availability', 'all');
+    if (!in_array($availability, ['all', 'available', 'unavailable'], true)) {
+        $availability = 'all';
+    }
+    $filterBreeds = GetProductCategory()->whereIn('category_type', [1, 2])->values();
+    $products = getProductPage($cat_id, $sort_by, $sort_column, $page, $no_of_record, [
+        'price_min' => $price_min,
+        'price_max' => $price_max,
+        'availability' => $availability,
+    ]);
 @endphp
 
 <style>
@@ -20,27 +30,44 @@
     <div class="container">
         <div class="row">
             @if(isset($meta['is_searchbar']) && $meta['is_searchbar']*1 === 1)
-                @php
-                    $categories = GetProductCategory();
-                @endphp
-
                 <div class="col-lg-4 theiaStickySidebar">
                     <div class="listings-sidebar">
                         <div class="card">
                             <h4><img  src="{{asset('assets_frontend')}}/img/details-icon.svg" alt="details-icon"> Filter</h4>
-                            <form>
-                                <div class="filter-content form-group amenities">
-                                    <h4> Breed</h4>
-                                    <ul>
-                                        @foreach (GetProductCategory(1) as $k => $category)
-                                            <li>
-                                                <label class="custom_check">
-                                                    <input type="checkbox" name="cat_id" @if($cat_id*1 !== $category->id) onchange="searchCategory({{ $category->id }})" @else disabled checked @endif>
-                                                    <span class="checkmark"></span> {{ ($category->title)??'' }}
-                                                </label>
-                                            </li>
+                            <form method="get" action="{{ request()->url() }}" class="product-listing-filters" id="productListingFilterForm">
+                                <input type="hidden" name="sort_by" value="{{ $sort_by }}">
+                                <input type="hidden" name="sort_column" value="{{ $sort_column }}">
+                                <div class="filter-content form-group">
+                                    <h4 class="mb-2">Breed</h4>
+                                    <select name="cat_id" class="form-control mb-3" onchange="document.getElementById('productListingFilterForm').submit();">
+                                        <option value="">All breeds</option>
+                                        @foreach($filterBreeds as $category)
+                                            <option value="{{ $category->id }}" @selected((string) $cat_id === (string) $category->id)>{{ $category->title }}</option>
                                         @endforeach
-                                    </ul>
+                                    </select>
+                                </div>
+                                <div class="filter-content form-group">
+                                    <h4 class="mb-2">Price ($)</h4>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="number" name="price_min" class="form-control" placeholder="Min" min="0" step="0.01" value="{{ $price_min }}">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" name="price_max" class="form-control" placeholder="Max" min="0" step="0.01" value="{{ $price_max }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="filter-content form-group mb-3">
+                                    <h4 class="mb-2">Availability</h4>
+                                    <select name="availability" class="form-control">
+                                        <option value="all" @selected($availability === 'all')>All</option>
+                                        <option value="available" @selected($availability === 'available')>Available</option>
+                                        <option value="unavailable" @selected($availability === 'unavailable')>Sold / Unavailable</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                                    <a href="{{ request()->url() }}" class="btn btn-outline-secondary btn-sm">Reset</a>
                                 </div>
                             </form>
                         </div>
@@ -62,7 +89,7 @@
                         <div class="sortbyset">
                             <span class="sortbytitle">Sort by</span>
                             <div class="sorting-select">
-                                <select class="form-control select sortselect" onchange="searchCategory({{ $cat_id }})">
+                                <select class="form-control select sortselect product-listing-sort" onchange="applyProductListSort()">
                                     <option value="ASC" data-column="created_at" @if($sort_column === 'created_at') selected @endif>Default</option>
                                     <option value="ASC" data-column="sell_price" @if($sort_by === 'ASC' && $sort_column === 'sell_price') selected @endif>Price Low to High</option>
                                     <option value="DESC" data-column="sell_price" @if($sort_by === 'DESC' && $sort_column === 'sell_price') selected @endif>Price High to Low</option>
@@ -125,7 +152,7 @@
                                             </h6>
                                             <div class="blog-location-details">
                                             <div class="location-info">
-                                                <i class="fa-regular fa-calendar-days"></i> {{ Carbon\Carbon::parse($product->product_listing)->format('d M, Y') }}
+                                                <i class="fa-regular fa-calendar-days"></i> {{ Carbon\Carbon::parse($product->product_listing)->format('m/d/Y') }}
                                             </div>
                                             </div>
                                             <div class="amount-details">
@@ -153,31 +180,38 @@
 <!-- /Main Content Section -->
 
 <script>
-    function searchCategory(id) {
-        var page_id = 1;
-        var sort_by = $('.sortselect').find('option:selected').val();
-        var sort_column = $('.sortselect').find('option:selected').data('column');
-
-        // Initialize the base URL
-        var url = new URL('{!! url("products") !!}'); // This creates a URL object for manipulation
-        
-        // Set or update the query parameters
-        var params = new URLSearchParams(url.search); // Get the existing query params
-
-        // Update or add parameters
-        params.set('page', page_id);
-        params.set('sort_by', sort_by);
-        params.set('sort_column', sort_column);
-
-        // If id is defined, set or update cat_id
-        if (id !== undefined) {
-            params.set('cat_id', id); // Update or add the cat_id parameter
+    function goProductListing(overrides) {
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        for (var key in overrides) {
+            if (Object.prototype.hasOwnProperty.call(overrides, key)) {
+                var v = overrides[key];
+                if (v === null || v === undefined || v === '') {
+                    params.delete(key);
+                } else {
+                    params.set(key, String(v));
+                }
+            }
         }
-
-        // Update the URL search with the new params
+        params.set('page', '1');
         url.search = params.toString();
-
-        // Redirect to the constructed URL
         window.location.href = url.toString();
+    }
+    function applyProductListSort() {
+        var el = document.querySelector('.product-listing-sort');
+        if (!el) { return; }
+        var opt = el.selectedOptions[0];
+        goProductListing({
+            sort_by: el.value,
+            sort_column: opt && opt.getAttribute('data-column') ? opt.getAttribute('data-column') : 'created_at'
+        });
+    }
+    /** Retained for any legacy onclick references (e.g. featured blocks linking with JS). */
+    function searchCategory(id) {
+        if (id === undefined || id === null || id === '') {
+            goProductListing({ cat_id: null });
+        } else {
+            goProductListing({ cat_id: id });
+        }
     }
 </script>

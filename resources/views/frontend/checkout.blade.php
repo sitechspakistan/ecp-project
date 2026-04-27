@@ -1,6 +1,7 @@
 @extends('layouts.frontend')
 @section('title', 'Checkout | East Coast Puppies')
 @section('customStyles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <style>
         .proceedbtn{
             background-color: #df965e;
@@ -30,6 +31,10 @@
     </style>
 @endsection
 @section('content')
+@php
+    $checkoutSubtotal = (float) (cartTotal() ?? 0);
+    $checkoutProductIds = collect($data ?? [])->pluck('product')->filter()->map(fn ($id) => (int) $id)->values()->all();
+@endphp
 
     <!-- Breadscrumb Section -->
 		<div class="breadcrumb-bar">
@@ -60,6 +65,12 @@
                 @else
                 <div class="alert alert-warning">
                     <small>You are checking out as a guest. Have an account? <a href="{{route('frontfront.login')}}">Sign in</a> Or you can create an account during checkout.</small>
+                </div>
+                @endif
+
+                @if($errors->has('coupon'))
+                <div class="alert alert-danger" role="alert">
+                    {{ $errors->first('coupon') }}
                 </div>
                 @endif
 
@@ -194,15 +205,37 @@
                                         @endforeach
                                         </tbody>
                                         <tfoot>
+                                        <tr id="checkout-subtotal-row">
+                                            <td></td>
+                                            <th>Subtotal</th>
+                                            <th colspan="2" style="text-align: right;">$ <span id="checkout-subtotal-display">{{ number_format($checkoutSubtotal, 2) }}</span></th>
+                                        </tr>
+                                        <tr id="coupon-discount-row" style="display: none;">
+                                            <td></td>
+                                            <th>Coupon</th>
+                                            <th colspan="2" style="text-align: right; color: #198754;">- $ <span id="checkout-discount-display">0.00</span></th>
+                                        </tr>
                                         <tr>
                                             <td></td>
                                             <th>Total</th>
-                                            <th colspan="2" style="text-align: right;">$ {{number_format(cartTotal(),2)}}
-                                            <input type="hidden" name="order_total_amount" value="{{ (isset($total))?$total:cartTotal() }}">
+                                            <th colspan="2" style="text-align: right;">$ <span id="checkout-grand-total-display">{{ number_format($checkoutSubtotal, 2) }}</span>
+                                            <input type="hidden" name="order_total_amount" id="order_total_amount_input" value="{{ number_format($checkoutSubtotal, 2, '.', '') }}">
+                                            <input type="hidden" name="coupon_code" id="applied_coupon_code" value="{{ old('coupon_code') }}">
                                             </th>
-                                        </tr>  
+                                        </tr>
                                         </tfoot>
                                     </table>
+                                    <div class="form-group row p0" style="margin-top: 12px;">
+                                        <div class="col-md-8">
+                                            <label>Coupon code</label>
+                                            <input type="text" class="form-control text-uppercase" id="coupon_code_entry" placeholder="Enter code" autocomplete="off" value="{{ old('coupon_code') }}">
+                                        </div>
+                                        <div class="col-md-4" style="margin-top: 24px;">
+                                            <button type="button" class="proceedbtn" id="apply_coupon_btn" style="width: 100%; border: 0;">Apply</button>
+                                        </div>
+                                    </div>
+                                    <div id="coupon_message" class="small" style="margin-top: 8px; display: none;" role="alert"></div>
+                                    <button type="button" class="btn btn-link p-0" id="remove_coupon_btn" style="display: none; margin-top: 4px;">Remove coupon</button>
                                 </div>
                             </div>
                             <div class="panel panel-default f-default">
@@ -282,6 +315,126 @@
             });
         })
 
+
+        var checkoutSubtotal = {{ number_format($checkoutSubtotal, 2, '.', '') }};
+        var checkoutProductIds = @json($checkoutProductIds);
+
+        function formatMoney(n) {
+            return parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function couponMessageClear() {
+            $('#coupon_message').removeClass('alert alert-danger alert-success').hide().empty();
+        }
+
+        function couponMessageError(text) {
+            $('#coupon_message').removeClass('alert-success').addClass('alert alert-danger').html(text).show();
+        }
+
+        function couponMessageOk(text) {
+            $('#coupon_message').removeClass('alert-danger').addClass('alert alert-success').html(text).show();
+        }
+
+        function parseCouponAjaxMessage(xhr) {
+            var j = xhr.responseJSON;
+            if (j) {
+                if (j.errors && typeof j.errors === 'object') {
+                    var keys = Object.keys(j.errors);
+                    if (keys.length && j.errors[keys[0]] && j.errors[keys[0]][0]) {
+                        return j.errors[keys[0]][0];
+                    }
+                }
+                if (j.message) {
+                    return j.message;
+                }
+            }
+            try {
+                var parsed = JSON.parse(xhr.responseText || '{}');
+                if (parsed.message) {
+                    return parsed.message;
+                }
+            } catch (e) {}
+            return 'Could not apply coupon. Please try again.';
+        }
+
+        function resetCouponUi() {
+            $('#applied_coupon_code').val('');
+            $('#coupon-discount-row').hide();
+            $('#checkout-discount-display').text('0.00');
+            $('#checkout-grand-total-display').text(formatMoney(checkoutSubtotal));
+            $('#order_total_amount_input').val(checkoutSubtotal.toFixed(2));
+            $('#remove_coupon_btn').hide();
+        }
+
+        $('#apply_coupon_btn').on('click', function () {
+            var code = ($('#coupon_code_entry').val() || '').trim();
+            if (!code) {
+                couponMessageError('Enter a coupon code.');
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('Enter a coupon code');
+                }
+                return;
+            }
+            var $btn = $(this);
+            $btn.prop('disabled', true);
+            couponMessageClear();
+            $('#coupon_message').addClass('alert alert-secondary').text('Checking…').show();
+            $.ajax({
+                url: '{{ route('coupon.apply') }}',
+                type: 'POST',
+                dataType: 'json',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    code: code,
+                    subtotal: checkoutSubtotal,
+                    product_ids: checkoutProductIds
+                },
+                success: function (res) {
+                    $('#coupon_message').removeClass('alert-secondary');
+                    if (!res.success) {
+                        var m = res.message || 'Coupon could not be applied.';
+                        resetCouponUi();
+                        couponMessageError(m);
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error(m);
+                        }
+                        return;
+                    }
+                    $('#applied_coupon_code').val(res.coupon.code);
+                    $('#checkout-discount-display').text(formatMoney(res.discount_amount));
+                    $('#checkout-grand-total-display').text(formatMoney(res.final_total));
+                    $('#order_total_amount_input').val(parseFloat(res.final_total).toFixed(2));
+                    $('#coupon-discount-row').show();
+                    $('#remove_coupon_btn').show();
+                    couponMessageOk('Coupon applied.');
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success('Coupon applied');
+                    }
+                },
+                error: function (xhr) {
+                    $('#coupon_message').removeClass('alert-secondary');
+                    var msg = parseCouponAjaxMessage(xhr);
+                    resetCouponUi();
+                    couponMessageError(msg);
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(msg);
+                    }
+                },
+                complete: function () {
+                    $btn.prop('disabled', false);
+                }
+            });
+        });
+
+        $('#remove_coupon_btn').on('click', function () {
+            $('#coupon_code_entry').val('');
+            resetCouponUi();
+            couponMessageClear();
+        });
 
         $(document).on('click','.addToCart',function(){
             

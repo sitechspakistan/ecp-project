@@ -66,6 +66,12 @@
               <span class="nav-main-link-name">Orders</span>
             </a>
           </li>
+          <li class="nav-main-item">
+            <a class="nav-main-link" href="{{route('coupons.index')}}">
+              <i class="nav-main-link-icon fa fa-ticket"></i>
+              <span class="nav-main-link-name">Coupons</span>
+            </a>
+          </li>
         @endif
         {{-- @if(check_access(Auth::user()->id,'services','_show')==1)
         <li class="nav-main-item">

@@ -77,4 +77,9 @@ class ProductCategories extends Model
     {
         return $this->hasMany(Products::class, 'category_id');
     }
+
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class, 'coupon_categories', 'category_id', 'coupon_id');
+    }
 }

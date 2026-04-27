@@ -21,7 +21,7 @@
                     </a>
                     <figcaption class="mu-latest-course-imgcaption">
                       <a href="#">TECHNOLOGY</a>
-                      <span><i class="fa fa-clock-o"></i>{{$news['publish_date']??$news['created_at']->format('d/m/Y')}} </span>
+                      <span><i class="fa fa-clock-o"></i>{{$news['publish_date']??$news['created_at']->format('m/d/Y')}} </span>
                     </figcaption>
                   </figure>
                   <div class="mu-latest-course-single-content">

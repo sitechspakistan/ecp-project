@@ -128,7 +128,7 @@ $l_sort = $_GET['sort']??'desc';
                 <td class="d-none d-md-table-cell fs-sm">{{$v->name}}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{$v->email}}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{$v->membership_title??''}}</td>
-                <td class="d-none d-md-table-cell fs-sm">{{ !empty($v->expiry_date) ? \Carbon\Carbon::parse($v->expiry_date)->format('d/m/Y') : '-' }}</td>
+                <td class="d-none d-md-table-cell fs-sm">{{ !empty($v->expiry_date) ? \Carbon\Carbon::parse($v->expiry_date)->format('m/d/Y') : '-' }}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{$v->products->count()??''}}</td>
                 <td>
                     @if($v->is_active==1)
@@ -137,7 +137,7 @@ $l_sort = $_GET['sort']??'desc';
                     <a href="{{route('users.seller.status', $v->id)}}"><span class="badge bg-danger">Inactive</span></a>
                     @endif
                   </td>
-                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('d/m/Y')}}</td>
+                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('m/d/Y')}}</td>
                 <td class="text-center fs-sm">
                     <button type="button" class="btn btn-sm btn-alt-secondary" data-bs-toggle="modal" data-bs-target="#sellerChangePasswordModal" data-password-url="{{ route('users.seller.password', $v->id) }}" data-seller-name="{{ $v->name }}" title="Change password">
                         <i class="fa fa-fw fa-key"></i>

@@ -94,13 +94,37 @@
                             </div>
                         </div>
                     </div>
+                    
+                    @if(isset($data->user_id))
+                        <div class="row">
+                            <div class="card mt-4">
+                                <div class="row">
+                                    <div class="col-md-12"><h5>About the Owner dog</h5></div>
+                                    <div class="col-md-3">
+                                        @if(isset($data->user->image))
+                                        <img src="{{ url($data->user->image) }}" alt="{{$data->user->name}}">
+                                        @else
+                                        <img src="{{ asset('assets_frontend/img/profile-img.jpg') }}" alt="{{$data->user->name}}">
+                                        @endif
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h6>{{ $data->user->name}}</h6>
+                                        <p><strong>Phone No: </strong><small>{{$data->user->phone}}</small></p>
+                                        <p><strong>Email: </strong><small>{{$data->user->email}}</small></p>
+                                        <p><strong>Member Since: </strong><small>{{ Carbon\Carbon::parse($data->user->created_at)->format('m/d/Y') }}</small></p>
+                                        <p><strong>Location: </strong> <small class="text-info">{{$data->user->city}}, {{$data->user->state}}, {{$data->user->country}}</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- About the Owner
 dog
 ashley garner
 Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 Location: Paterson , New Jersey , United States -->
 
-                    @if(Auth::check())
+                    {{-- @if(Auth::check())
                       @if(Auth::user()->membership_id !== 4 && Carbon\Carbon::parse(Auth::user()->expiry_date)->format('Y-m-d') >= Carbon\Carbon::now()->format('Y-m-d'))
                         <div class="row">
                           <div class="card mt-4">
@@ -124,7 +148,7 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                           </div>
                         </div>
                       @endif
-                    @endif
+                    @endif --}}
                 </div>              
             </div>
             <div class="col-lg-6">
@@ -227,7 +251,7 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                         @endif
                         @if(isset($data->photo_date))
                             <tr>
-                            <td><strong>Date Of Photograph:</strong></td>
+                            <td><strong>Date Photographed:</strong></td>
                             <td>{{Carbon\Carbon::parse($data->photo_date)->format('m/d/Y')}}</td>
                             </tr>
                         @endif
@@ -251,8 +275,8 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                         @endif
                         @if(isset($data->vaccinations))
                             <tr>
-                            <td><strong>Vaccinations and Dewormings:</strong></td>
-                            <td>{{$data->vaccinations}}</td>
+                            <td><strong>Vaccinations &amp; Deworming:</strong></td>
+                            <td>{{ productYesNoLabel($data->vaccinations) }}</td>
                             </tr>
                         @endif
                         @if(isset($data->health_warranty))
@@ -261,16 +285,16 @@ Phone No: 9736527758 Email Address: agarner923@Juno.com Member Since: Jan 2013 L
                             <td>{{ ($data->health_warranty*1 === 0)?'No':'Yes' }}</td>
                             </tr>
                         @endif
-                        @if(isset($data->health_certificate) && ($data->health_certificate != '0' || $data->health_certificate != 0))
+                        @if(isset($data->health_certificate))
                             <tr>
                             <td><strong>Health Certificate:</strong></td>
-                            <td>{{ $data->health_certificate ?? '-' }}</td>
+                            <td>{{ productYesNoLabel($data->health_certificate) }}</td>
                             </tr>
                         @endif
-                        @if(isset($data->health_record) && ($data->health_record != '0' || $data->health_record != 0))
+                        @if(isset($data->health_record))
                             <tr>
                             <td><strong>Health Record:</strong></td>
-                            <td>{{ $data->health_record ?? '-' }}</td>
+                            <td>{{ productYesNoLabel($data->health_record) }}</td>
                             </tr>
                         @endif
                     </tbody>

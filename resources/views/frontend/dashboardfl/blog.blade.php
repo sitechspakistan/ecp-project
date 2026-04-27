@@ -65,7 +65,7 @@
                                                             <td>
                                                                 <h6><a href="{{route('frontblog.edit', $blog->id)}}">{{ ($blog->title)??'#' }}</a></h6>
                                                             </td>
-                                                            <td>{{ Carbon\Carbon::parse($blog->created_at)->format('d/m/Y') }}</td>
+                                                            <td>{{ Carbon\Carbon::parse($blog->created_at)->format('m/d/Y') }}</td>
                                                             <td>
                                                                 @if($blog->is_active === 1)<span class="status-text">Published</span>@endif
                                                                 @if($blog->is_active === 0)<span class="status-text unpublish">Un Published</span>@endif

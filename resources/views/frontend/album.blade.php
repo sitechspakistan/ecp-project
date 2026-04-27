@@ -47,7 +47,7 @@
                               <h4 class="media-heading">
                                 <a style="font-weight: 700; color: gray" title="{{$v->title}}." class="ellipse" href="{{route('albumDetail', $v->slug)}}">{{$v->title}}</a>
                               </h4>
-                              <span class="popular-course-price" style="color: gray">{{$v->created_at->format('D, M d, Y')}}</span>
+                              <span class="popular-course-price" style="color: gray">{{$v->created_at->format('D, m/d/Y')}}</span>
                             </div>
                         </div>
                         @endforeach

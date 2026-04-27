@@ -90,7 +90,7 @@ $l_sort = $_GET['sort']??'desc';
                   {{ ($v->order_no)??'' }}
                 </td>
                 <td>
-                  {{ (Carbon\Carbon::parse($v->created_at)->format('d/m/Y'))??'' }}
+                  {{ (Carbon\Carbon::parse($v->created_at)->format('m/d/Y'))??'' }}
                 </td>
                 <td>
                   <p class="mb-0"><small>{{ ($v->user->name)??'' }} <p class="mb-0"><small>({{ ($v->user->email)??'' }})</small></p></small></p>
@@ -113,7 +113,7 @@ $l_sort = $_GET['sort']??'desc';
                   $ {{ number_format(($v->order_total_amount)??0, 2) }}
                 </td>
                 <td>
-                  {{ (Carbon\Carbon::parse($v->created_at)->format('d/m/Y h:m:s'))??'' }}
+                  {{ (Carbon\Carbon::parse($v->created_at)->format('m/d/Y H:i:s'))??'' }}
                 </td>            
                 <td class="text-center fs-sm">
                   <a class="btn btn-sm btn-alt-secondary" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#ViewModal{{$v->id}}">
@@ -161,7 +161,7 @@ $l_sort = $_GET['sort']??'desc';
                         </tr>
                         <tr>
                           <th><strong>Order Date: </strong></th>
-                          <td>{{ (Carbon\Carbon::parse($v->created_at)->format('d/m/Y'))??'-' }}</td>
+                          <td>{{ (Carbon\Carbon::parse($v->created_at)->format('m/d/Y'))??'-' }}</td>
                         </tr>
                         <tr>
                           <th><strong>Order Status: </strong></th>

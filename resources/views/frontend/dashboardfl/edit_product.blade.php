@@ -249,20 +249,50 @@
                                         </select>
                                     </div>
                                     <div class="col-md-4 form-group">
+                                        <label class="col-form-label">Color/Markings</label>
+                                        <input type="text" name="color_markings" class="form-control pass-input" placeholder="Color/Markings" value="{{ $product->color_markings ?? '' }}">
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label class="col-form-label">Potential</label>
+                                        <select name="potential" class="form-control pass-input">
+                                            <option value="">Select</option>
+                                            <option value="Show" @selected(old('potential', $product->potential ?? '') === 'Show')>Show</option>
+                                            <option value="Pet" @selected(old('potential', $product->potential ?? '') === 'Pet')>Pet</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label class="col-form-label">Champion Bloodlines</label>
+                                        <input type="text" name="champion_bloodlines" class="form-control pass-input" placeholder="Champion Bloodlines" value="{{ $product->champion_bloodlines ?? '' }}">
+                                    </div>
+                                    <div class="col-md-4 form-group">
                                         <label class="col-form-label">Champion Sired</label>
                                         <input type="text" name="champion_sired" class="form-control pass-input" placeholder="Champion Sired" value="{{ $product->champion_sired ?? '' }}">
                                     </div>
+                                    @php
+                                        $vaccDef = is_numeric($product->vaccinations ?? null) && (int) $product->vaccinations === 1 ? '1' : '0';
+                                        $hcDef = is_numeric($product->health_certificate ?? null) && (int) $product->health_certificate === 1 ? '1' : '0';
+                                        $hrDef = is_numeric($product->health_record ?? null) && (int) $product->health_record === 1 ? '1' : '0';
+                                    @endphp
                                     <div class="col-md-4 form-group">
-                                        <label class="col-form-label">Vaccinations and Dewormings</label>
-                                        <input type="text" name="vaccinations" class="form-control pass-input" placeholder="Vaccinations and Dewormings" value="{{ $product->vaccinations ?? '' }}">
+                                        <label class="col-form-label">Vaccinations &amp; Deworming</label>
+                                        <select name="vaccinations" class="form-control pass-input">
+                                            <option value="0" @selected(old('vaccinations', $vaccDef) == '0')>No</option>
+                                            <option value="1" @selected(old('vaccinations', $vaccDef) == '1')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Health Certificate</label>
-                                        <input type="text" name="health_certificate" class="form-control pass-input" placeholder="Health Certificate" value="{{ $product->health_certificate ?? '' }}">
+                                        <select name="health_certificate" class="form-control pass-input">
+                                            <option value="0" @selected(old('health_certificate', $hcDef) == '0')>No</option>
+                                            <option value="1" @selected(old('health_certificate', $hcDef) == '1')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Health Record</label>
-                                        <input type="text" name="health_record" class="form-control pass-input" placeholder="Health Record" value="{{ $product->health_record ?? '' }}">
+                                        <select name="health_record" class="form-control pass-input">
+                                            <option value="0" @selected(old('health_record', $hrDef) == '0')>No</option>
+                                            <option value="1" @selected(old('health_record', $hrDef) == '1')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Age</label>
@@ -273,8 +303,8 @@
                                         <input type="date" class="form-control pass-input" name="product_listing" value="{{ $product->product_listing ?? '' }}" />
                                     </div>
                                     <div class="col-md-4 form-group">
-                                        <label class="col-form-label">Date of Photograph</label>
-                                        <input type="date" class="form-control pass-input" name="photo_date" value="{{ $product->photo_date ?? '' }}" />
+                                        <label class="col-form-label">Date Photographed <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control pass-input" name="photo_date" value="{{ $product->photo_date ?? '' }}" required />
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Size <span class="text-danger">*</span></label>

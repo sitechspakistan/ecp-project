@@ -78,7 +78,7 @@ $l_sort = $_GET['sort']??'desc';
                   <td class="d-none d-md-table-cell fs-sm">{{ $v->user_ip }}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{ $v->user->name ?? 'System' }}</td>
                 <td class="d-none d-md-table-cell fs-sm">{{ $v->description }}</td>
-                <td class="d-none d-sm-table-cell text-end fs-sm">{{$v->created_at->format('d M Y h:i:a')}}</td>
+                <td class="d-none d-sm-table-cell text-end fs-sm">{{$v->created_at->format('m/d/Y h:i A')}}</td>
               </tr>
               @endforeach
             </tbody>

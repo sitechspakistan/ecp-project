@@ -61,7 +61,7 @@
                                         <div class="blog-location-details">
                                             <div class="location-info">
                                             <i class="fa-regular fa-calendar-days"></i>
-                                            {{ Carbon\Carbon::parse($product->product_listing)->format('d M, Y') }}
+                                            {{ Carbon\Carbon::parse($product->product_listing)->format('m/d/Y') }}
                                             </div>
                                         </div>
                                         <div class="amount-details">

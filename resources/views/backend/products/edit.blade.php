@@ -230,7 +230,11 @@
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Potential</label>
-              <input type="text" name="potential" class="form-control light-fields input-sm" placeholder="Potential" value="{{ ($data['potential'])??'' }}">
+              <select name="potential" class="form-control light-fields input-sm">
+                <option value="">Select</option>
+                <option value="Show" @if(isset($data['potential']) && $data['potential'] === 'Show') selected @endif>Show</option>
+                <option value="Pet" @if(isset($data['potential']) && $data['potential'] === 'Pet') selected @endif>Pet</option>
+              </select>
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Champion Bloodlines</label>
@@ -240,9 +244,15 @@
               <label class="form-label">Champion Sired</label>
               <input type="text" name="champion_sired" class="form-control light-fields input-sm" placeholder="Champion Sired" value="{{ ($data['champion_sired'])??'' }}">
             </div>
+            @php
+              $bV = isset($data['vaccinations']) && is_numeric($data['vaccinations']) && (int) $data['vaccinations'] === 1;
+            @endphp
             <div class="form-group col-md-4 mb-2">
-              <label class="form-label">Vaccinations and Dewormings</label>
-              <input type="text" name="vaccinations" class="form-control light-fields input-sm" placeholder="Vaccinations and Dewormings" value="{{ ($data['vaccinations'])??'' }}">
+              <label class="form-label">Vaccinations &amp; Deworming</label>
+              <select name="vaccinations" class="form-control light-fields input-sm">
+                <option value="0" @if(!$bV) selected @endif>No</option>
+                <option value="1" @if($bV) selected @endif>Yes</option>
+              </select>
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Age</label>
@@ -253,8 +263,8 @@
               <input type="date" class="form-control light-fields input-sm" name="product_listing" value="{{ ($data['product_listing'])??'' }}" />
             </div>
             <div class="form-group col-md-4 mb-2">
-              <label class="form-label">Date of Photograph</label>
-              <input type="date" class="form-control light-fields input-sm" name="photo_date" value="{{ ($data['photo_date'])??'' }}" />
+              <label class="form-label">Date Photographed <span class="text-danger">*</span></label>
+              <input type="date" class="form-control light-fields input-sm" name="photo_date" value="{{ ($data['photo_date'])??'' }}" required />
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Size <span class="text-danger">*</span></label>
@@ -269,17 +279,19 @@
               <label class="form-label">Available Color</label>
               <input type="text" name="avaiable_color" class="form-control light-fields input-sm" placeholder="Available Color" value="{{ ($data['avaiable_color'])??'' }}">
             </div>
-            <div class="form-group col-md-4">
-              <label class="form-label" for="health_certificate">Health Certificate</label>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="health_certificate" name="health_certificate" @if(isset($data['health_certificate']) && $data['health_certificate']*1 === 1) checked @endif>
-              </div>
+            <div class="form-group col-md-4 mb-2">
+              <label class="form-label">Health Certificate</label>
+              <select name="health_certificate" class="form-control light-fields input-sm">
+                <option value="0" @if(empty($data['health_certificate']) || (int) $data['health_certificate'] === 0) selected @endif>No</option>
+                <option value="1" @if(isset($data['health_certificate']) && (int) $data['health_certificate'] === 1) selected @endif>Yes</option>
+              </select>
             </div>
-            <div class="form-group col-md-4">
-              <label class="form-label" for="health_record">Health Record</label>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="health_record" name="health_record" @if(isset($data['health_record']) && $data['health_record']*1 === 1) checked @endif>
-              </div> 
+            <div class="form-group col-md-4 mb-2">
+              <label class="form-label">Health Record</label>
+              <select name="health_record" class="form-control light-fields input-sm">
+                <option value="0" @if(empty($data['health_record']) || (int) $data['health_record'] === 0) selected @endif>No</option>
+                <option value="1" @if(isset($data['health_record']) && (int) $data['health_record'] === 1) selected @endif>Yes</option>
+              </select>
             </div>
             <div class="form-group col-md-4">
               <label class="form-label" for="health_warranty">Health Warranty</label>

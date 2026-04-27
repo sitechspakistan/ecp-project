@@ -495,6 +495,7 @@ class HomeController extends Controller
             'gender' => 'required',
             'size' => 'required',
             'image' => 'required',
+            'photo_date' => 'required|date',
         ]);
 
         $data = $request->except('_token');
@@ -534,8 +535,9 @@ class HomeController extends Controller
         $data['is_active'] = 1;
         $data['created_by'] = Auth::user()->id;
         $data['user_id'] = Auth::user()->id;
-        $data['health_certificate'] = ($request->health_certificate === 'on' || $request->health_certificate === 1)?1:0;
-        $data['health_record'] = ($request->health_record === 'on' || $request->health_record === 1)?1:0;
+        $data['vaccinations'] = (int) $request->input('vaccinations', 0) ? 1 : 0;
+        $data['health_certificate'] = (int) $request->input('health_certificate', 0) ? 1 : 0;
+        $data['health_record'] = (int) $request->input('health_record', 0) ? 1 : 0;
         $data['health_warranty'] = ($request->health_warranty === 'on' || $request->health_warranty === 1)?1:0;
         
         if(in_array((int) Auth::user()->membership_id, featuredSellerMembershipCodes(), true) && Carbon::parse(Auth::user()->expiry_date)->format('Y-m-d') >= Carbon::now()->format('Y-m-d')){
@@ -566,6 +568,7 @@ class HomeController extends Controller
             'sell_price' => 'required',
             'gender' => 'required',
             'size' => 'required',
+            'photo_date' => 'required|date',
         ]);
 
         $data = $request->except('_token', 'gallery', 'existing_gallery', 'removed_gallery');
@@ -646,6 +649,9 @@ class HomeController extends Controller
         $data['is_active'] = 1;
         $data['created_by'] = Auth::user()->id;
         $data['user_id'] = Auth::user()->id;
+        $data['vaccinations'] = (int) $request->input('vaccinations', 0) ? 1 : 0;
+        $data['health_certificate'] = (int) $request->input('health_certificate', 0) ? 1 : 0;
+        $data['health_record'] = (int) $request->input('health_record', 0) ? 1 : 0;
         $data['health_warranty'] = ($request->health_warranty === 'on' || $request->health_warranty === 'yes' || $request->health_warranty === 1)?1:0;
         
         if(in_array((int) Auth::user()->membership_id, featuredSellerMembershipCodes(), true) && Carbon::parse(Auth::user()->expiry_date)->format('Y-m-d') >= Carbon::now()->format('Y-m-d')){

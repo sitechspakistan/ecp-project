@@ -8,6 +8,7 @@ use App\Models\Orders;
 use App\Models\ProductMessage;
 use App\Models\Products;
 use App\Models\User;
+use App\Services\CouponService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -191,25 +192,59 @@ class CartController extends Controller
         $request['payment'] = $request->payment;
         $request['order_status'] = 'pending';
         $products = $request->items;
+
+        $subtotal = 0.0;
+        if (! empty($products['product_id']) && is_array($products['product_id'])) {
+            foreach ($products['product_id'] as $key => $_pid) {
+                $subtotal += (float) $products['price'][$key] * (int) $products['qty'][$key];
+            }
+        }
+
+        $couponCode = strtoupper(trim((string) $request->input('coupon_code', '')));
+        $discountAmount = 0.0;
+        $finalTotal = $subtotal;
+
+        if ($couponCode !== '') {
+            $couponService = app(CouponService::class);
+            $applyUser = User::find($request->user_id);
+            $productIds = array_map('intval', $products['product_id'] ?? []);
+            $applied = $couponService->applyToSubtotal($couponCode, $subtotal, $productIds, $applyUser);
+            if (! $applied['success']) {
+                return redirect()->back()
+                    ->withErrors(['coupon' => $applied['message']])
+                    ->with('error', $applied['message'])
+                    ->withInput();
+            }
+            $discountAmount = (float) $applied['discount_amount'];
+            $finalTotal = (float) $applied['final_total'];
+            $c = $applied['coupon'];
+            $request->merge([
+                'order_total_amount' => $finalTotal,
+                'payment_info' => json_encode([
+                    'coupon_id' => $c->id,
+                    'coupon_code' => $c->code,
+                    'discount_type' => $c->discount_type,
+                    'discount_value' => (string) $c->discount_value,
+                    'discount_amount' => $discountAmount,
+                    'subtotal' => $subtotal,
+                ]),
+            ]);
+        } else {
+            $request->merge(['order_total_amount' => $subtotal]);
+        }
+
         if($request->payment=='stripe') {      
             require_once(public_path('stripe-php/init.php'));        
             \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
             $neworder = Orders::create($request->all());
             $p_items =[]; $items = [];
             if(!empty($products)) {
-                $p_items = [];
-                
+                $useDiscount = $couponCode !== '' && $discountAmount > 0.009 && $subtotal > 0;
+                $p_items = $useDiscount
+                    ? $this->stripeLineItemsWithProportionalDiscount($products, $subtotal, $finalTotal)
+                    : $this->stripeLineItemsOriginalPrices($products);
+
                 foreach($products['product_id'] as $key => $value) {
-                    $p_items[] = [
-                        'price_data' => [
-                            'currency' => 'USD',
-                            'unit_amount' => $products['price'][$key]*100,
-                            'product_data' => [
-                                'name' => (isset($products['title'][$key]))?$products['title'][$key]:'',
-                            ]
-                        ],
-                        'quantity' => $products['qty'][$key]
-                    ];
                     OrderDetail::create([
                         'order_id'=>$neworder['id'],
                         'title'=>(isset($products['title'][$key]))?$products['title'][$key]:'',
@@ -223,7 +258,6 @@ class CartController extends Controller
                         'product_id'=>(isset($products['product_id'][$key]))?$products['product_id'][$key]:NULL,
                         'currency_symbol'=>(isset($products['currency_symbol'][$key]))?$products['currency_symbol'][$key]:NULL,
                     ]);
-                    // $items[] = ['title'=>(isset($products['title'][$key]))?$products['title'][$key]:'','qty'=>$products['qty'][$key],'price'=>getProduct($value)['price'],'total'=>$products['price'][$key]];
                 } 
             }        
 
@@ -373,5 +407,83 @@ class CartController extends Controller
         $neworder->update(['session'=>$session['id']]);
         $session_id = $session['id'];
         return view('frontend.stripe',compact('session_id'));
+    }
+
+    /**
+     * @param  array<string, array<int, mixed>>  $products
+     * @return array<int, array<string, mixed>>
+     */
+    private function stripeLineItemsOriginalPrices(array $products): array
+    {
+        $p_items = [];
+        foreach ($products['product_id'] as $key => $value) {
+            $p_items[] = [
+                'price_data' => [
+                    'currency' => 'USD',
+                    'unit_amount' => (int) round((float) $products['price'][$key] * 100),
+                    'product_data' => [
+                        'name' => (isset($products['title'][$key])) ? $products['title'][$key] : '',
+                    ],
+                ],
+                'quantity' => $products['qty'][$key],
+            ];
+        }
+
+        return $p_items;
+    }
+
+    /**
+     * Scale unit prices so Stripe line totals match discounted order total (proportional split).
+     *
+     * @param  array<string, array<int, mixed>>  $products
+     * @return array<int, array<string, mixed>>
+     */
+    private function stripeLineItemsWithProportionalDiscount(array $products, float $subtotal, float $finalTotal): array
+    {
+        if ($subtotal <= 0) {
+            return $this->stripeLineItemsOriginalPrices($products);
+        }
+
+        $factor = $finalTotal / $subtotal;
+        $keys = array_keys($products['product_id']);
+        $lines = [];
+        foreach ($keys as $key) {
+            $qty = max(1, (int) $products['qty'][$key]);
+            $unitOriginal = (float) $products['price'][$key];
+            $lines[$key] = [
+                'qty' => $qty,
+                'unit' => round($unitOriginal * $factor, 2),
+                'title' => (isset($products['title'][$key])) ? $products['title'][$key] : '',
+            ];
+        }
+
+        $sum = 0.0;
+        foreach ($lines as $l) {
+            $sum += $l['unit'] * $l['qty'];
+        }
+        $diff = round($finalTotal - $sum, 2);
+        if (abs($diff) >= 0.01 && $keys !== []) {
+            $lastKey = $keys[array_key_last($keys)];
+            $lq = $lines[$lastKey]['qty'];
+            $lines[$lastKey]['unit'] = round($lines[$lastKey]['unit'] + ($diff / $lq), 2);
+        }
+
+        $p_items = [];
+        foreach ($keys as $key) {
+            $l = $lines[$key];
+            $unitCents = (int) max(1, round($l['unit'] * 100));
+            $p_items[] = [
+                'price_data' => [
+                    'currency' => 'USD',
+                    'unit_amount' => $unitCents,
+                    'product_data' => [
+                        'name' => $l['title'],
+                    ],
+                ],
+                'quantity' => $l['qty'],
+            ];
+        }
+
+        return $p_items;
     }
 }

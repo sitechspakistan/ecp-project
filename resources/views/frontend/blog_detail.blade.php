@@ -18,7 +18,7 @@
           <a href="javascript:void(0)"><span> {{$data['author']}} </span></a>
         </div>
         </li>
-        <li class="date-icon"><i class="fa-solid fa-calendar-days"></i> {{$data['publish_date']??$data['created_at']->format('M d, Y')}}</li>
+        <li class="date-icon"><i class="fa-solid fa-calendar-days"></i> {{$data['publish_date']??$data['created_at']->format('m/d/Y')}}</li>
     </ul>
   </div>		            
 </div>	

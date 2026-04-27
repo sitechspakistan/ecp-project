@@ -100,7 +100,7 @@ $l_sort = $_GET['sort']??'desc';
                   <a href="{{route('products-categories.edit', $v->id)}}">{{$v->title}} ~ <b>Frontpage</b></a>
                 </td>
                 <td class="d-none d-md-table-cell fs-sm">{{ $v->products_count }}</td>
-                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('d/m/Y')}}</td>
+                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('m/d/Y')}}</td>
                 <td>
                   <span class="badge bg-success">Published</span>
                 </td>                
@@ -127,7 +127,7 @@ $l_sort = $_GET['sort']??'desc';
                   <a href="{{route('products-categories.edit', $v->id)}}">{{$v->title}}</a>
                 </td>
                 <td class="d-none d-md-table-cell fs-sm">{{ $v->products_count }}</td>
-                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('d/m/Y')}}</td>
+                <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('m/d/Y')}}</td>
                 <td>
                   @if($v->is_active==1)
                   <span class="badge bg-success">Published</span>

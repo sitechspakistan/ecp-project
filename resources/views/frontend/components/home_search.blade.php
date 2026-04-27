@@ -1,5 +1,5 @@
 @php
-    $category = GetProductCategory();
+    $category = GetProductCategory()->whereIn('category_type', [1, 2]);
 @endphp
 
 <!-- Banner Section -->
@@ -34,7 +34,7 @@
                     @if(isset($meta['is_searchbar']))
                         <div class="search-box">
                         <form
-                            action="http://eastcoastpuppies.cc/search"
+                            action="{{ url('/products') }}"
                             class="d-flex"
                         >
                             <div class="search-input">
@@ -51,19 +51,19 @@
                             </div>
                             </div>
                             <div class="search-input line">
-                            <div class="form-group">
-                                <select
-                                class="form-control select category-select"
-                                name="category_id"
-                                >
-                                    <option value="" selected disabled style="visiblity:hidden;">Choose Category</option>
-                                    @if(isset($category))
-                                        @foreach($category as $k => $cat)
-                                            <option value="{{ $cat->id }}">{{ $cat->title }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                            </div>
+                                <div class="form-group">
+                                    <select
+                                    class="form-control select category-select"
+                                    name="cat_id"
+                                    >
+                                        <option value="" selected disabled style="visiblity:hidden;">Choose Category</option>
+                                        @if(isset($category))
+                                            @foreach($category as $k => $cat)
+                                                <option value="{{ $cat->id }}">{{ $cat->title }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
                             </div>
                             <div class="search-btn">
                             <button class="btn btn-primary" type="submit">

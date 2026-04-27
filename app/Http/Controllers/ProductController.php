@@ -35,13 +35,18 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'photo_date' => 'required|date',
+        ]);
+
         $data = $request->except('_token');
         $data['slug'] = generateUniqueProductSlug($request->title);
         $data['is_active'] = 1;
         $data['created_by'] = Auth::user()->id;
         $data['user_id'] = Auth::user()->id;
-        $data['health_certificate'] = ($request->health_certificate === 'on' || $request->health_certificate === 1)?1:0;
-        $data['health_record'] = ($request->health_record === 'on' || $request->health_record === 1)?1:0;
+        $data['vaccinations'] = (int) $request->input('vaccinations', 0) ? 1 : 0;
+        $data['health_certificate'] = (int) $request->input('health_certificate', 0) ? 1 : 0;
+        $data['health_record'] = (int) $request->input('health_record', 0) ? 1 : 0;
         $data['health_warranty'] = ($request->health_warranty === 'on' || $request->health_warranty === 1)?1:0;
         $data['is_featured'] = ($request->is_featured === 'on' || $request->is_featured === 1)?1:0;
         Products::create($data);
@@ -60,12 +65,17 @@ class ProductController extends Controller
     
     public function update($id, Request $request)
     {
+        $request->validate([
+            'photo_date' => 'required|date',
+        ]);
+
         $product = Products::find($id);
         
         $data = $request->except('_token', 'gallery', 'existing_gallery', 'removed_gallery', 'existing_gallery_items');
         $data['user_id'] = Auth::user()->id;
-        $data['health_certificate'] = ($request->health_certificate === 'on' || $request->health_certificate === 1)?1:0;
-        $data['health_record'] = ($request->health_record === 'on' || $request->health_record === 1)?1:0;
+        $data['vaccinations'] = (int) $request->input('vaccinations', 0) ? 1 : 0;
+        $data['health_certificate'] = (int) $request->input('health_certificate', 0) ? 1 : 0;
+        $data['health_record'] = (int) $request->input('health_record', 0) ? 1 : 0;
         $data['health_warranty'] = ($request->health_warranty === 'on' || $request->health_warranty === 1)?1:0;
         $data['is_featured'] = ($request->is_featured === 'on' || $request->is_featured === 1)?1:0;
         

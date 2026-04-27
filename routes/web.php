@@ -25,6 +25,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MembershipController;
+use App\Http\Controllers\CouponController;
 use App\Http\Middleware\AllowForAdmin;
 use App\Http\Middleware\CheckLoginRequired;
 use App\Http\Middleware\FrontAuth;
@@ -180,6 +181,14 @@ Route::get('/products/delete/{id}', [ProductController::class, 'delete'])->name(
 
     /* Orders Routes */
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+
+    /* Coupons */
+    Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
+    Route::get('/coupons/create', [CouponController::class, 'create'])->name('coupons.create');
+    Route::post('/coupons/store', [CouponController::class, 'store'])->name('coupons.store');
+    Route::get('/coupons/{id}/edit', [CouponController::class, 'edit'])->name('coupons.edit');
+    Route::post('/coupons/{id}/update', [CouponController::class, 'update'])->name('coupons.update');
+    Route::post('/coupons/delete-all', [CouponController::class, 'delete'])->name('coupons.delete');
     // Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
     // Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
     // Route::get('/orders/{id}/edit', [OrderController::class, 'edit'])->name('orders.edit');
@@ -273,6 +282,8 @@ Route::get('/events/{slug}', [HomeController::class, 'events_detail'])->name('ev
 Route::post('/send-message', [HomeController::class, 'contact_mail'])->name('contactMail');
 Route::post('/save-subscriber', [HomeController::class, 'subscribe'])->name('saveSubscriber');
 Route::get('/cart', [CartController::class, 'index'])->name('cartPage');
+Route::post('/coupon/validate', [CouponController::class, 'validateCoupon'])->name('coupon.validate');
+Route::post('/coupon/apply', [CouponController::class, 'applyCoupon'])->name('coupon.apply');
 
 Route::middleware([FrontAuth::class])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('front.dashbaord');

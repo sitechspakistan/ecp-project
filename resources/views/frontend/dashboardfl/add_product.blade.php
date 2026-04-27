@@ -251,7 +251,11 @@
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Potential</label>
-                                        <input type="text" name="potential" class="form-control pass-input" placeholder="Potential" value="{{ ($data['potential'])??'' }}">
+                                        <select name="potential" class="form-control pass-input">
+                                            <option value="">Select</option>
+                                            <option value="Show" @selected(old('potential', '') === 'Show')>Show</option>
+                                            <option value="Pet" @selected(old('potential', '') === 'Pet')>Pet</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Champion Bloodlines</label>
@@ -262,16 +266,25 @@
                                         <input type="text" name="champion_sired" class="form-control pass-input" placeholder="Champion Sired" value="{{ ($data['champion_sired'])??'' }}">
                                     </div>
                                     <div class="col-md-4 form-group">
-                                        <label class="col-form-label">Vaccinations and Dewormings</label>
-                                        <input type="text" name="vaccinations" class="form-control pass-input" placeholder="Vaccinations and Dewormings" value="{{ ($data['vaccinations'])??'' }}">
+                                        <label class="col-form-label">Vaccinations &amp; Deworming</label>
+                                        <select name="vaccinations" class="form-control pass-input">
+                                            <option value="0" @selected(old('vaccinations', '0') == '0')>No</option>
+                                            <option value="1" @selected(old('vaccinations', '0') == '1')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Health Certificate</label>
-                                        <input type="text" name="health_certificate" class="form-control pass-input" placeholder="Health Certificate" value="{{ ($data['health_certificate'])??'' }}">
+                                        <select name="health_certificate" class="form-control pass-input">
+                                            <option value="0" @selected(old('health_certificate', '0') == '0')>No</option>
+                                            <option value="1" @selected(old('health_certificate', '0') == '1')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Health Record</label>
-                                        <input type="text" name="health_record" class="form-control pass-input" placeholder="Health Record" value="{{ ($data['health_record'])??'' }}">
+                                        <select name="health_record" class="form-control pass-input">
+                                            <option value="0" @selected(old('health_record', '0') == '0')>No</option>
+                                            <option value="1" @selected(old('health_record', '0') == '1')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Age</label>
@@ -282,8 +295,8 @@
                                         <input type="date" class="form-control pass-input" name="product_listing" value="{{ ($data['product_listing'])??'' }}" />
                                     </div>
                                     <div class="col-md-4 form-group">
-                                        <label class="col-form-label">Date of Photograph</label>
-                                        <input type="date" class="form-control pass-input" name="photo_date" value="{{ ($data['photo_date'])??'' }}" />
+                                        <label class="col-form-label">Date Photographed <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control pass-input" name="photo_date" value="{{ ($data['photo_date'])??'' }}" required />
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Size <span class="text-danger">*</span></label>

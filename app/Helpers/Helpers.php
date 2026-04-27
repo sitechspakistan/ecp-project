@@ -273,22 +273,59 @@ function productTitleWithCategory($product){
     return $title;
 }
 
-function getProductPage($cat_id, $sort_by = 'DESC', $sort_column = 'sort_order', $page = 1, $no_of_record = 6){
+/**
+ * Display 0/1 (or legacy text) for vaccination / health fields on the product page.
+ */
+function productYesNoLabel($value)
+{
+    if ($value === null || $value === '') {
+        return '-';
+    }
+    if (is_numeric($value) && (int) $value === 1) {
+        return 'Yes';
+    }
+    if (is_numeric($value) && (int) $value === 0) {
+        return 'No';
+    }
+
+    return (string) $value;
+}
+
+function getProductPage($cat_id, $sort_by = 'DESC', $sort_column = 'sort_order', $page = 1, $no_of_record = 6, array $filters = []){
 
     $products = Products::with('location','category','reviews','bookmarks')
                         ->where('is_active',1);
 
-    if(isset($cat_id)){
-        $products = $products->where('category_id',$cat_id);
+    if (isset($cat_id) && $cat_id !== '' && $cat_id !== null) {
+        $products = $products->where('category_id', $cat_id);
     }
 
-    if(isset($sort_by) && isset($sort_column)){
-        $products = $products->orderBy($sort_column,$sort_by);
+    $priceMin = $filters['price_min'] ?? null;
+    if ($priceMin !== null && $priceMin !== '' && is_numeric($priceMin)) {
+        $products = $products->where('sell_price', '>=', (float) $priceMin);
+    }
+    $priceMax = $filters['price_max'] ?? null;
+    if ($priceMax !== null && $priceMax !== '' && is_numeric($priceMax)) {
+        $products = $products->where('sell_price', '<=', (float) $priceMax);
     }
 
-    $products = $products->paginate($no_of_record);
+    $availability = $filters['availability'] ?? 'all';
+    if ($availability === 'available') {
+        $products = $products->where('quantity', '>', 0);
+    } elseif ($availability === 'unavailable') {
+        $products = $products->where(function ($q) {
+            $q->where('quantity', '<=', 0)->orWhereNull('quantity');
+        });
+    }
 
-    return $products;
+    $sortable = ['sort_order', 'created_at', 'sell_price', 'title', 'id'];
+    if (!in_array($sort_column, $sortable, true)) {
+        $sort_column = 'created_at';
+    }
+    $sortDir = strtoupper((string) $sort_by) === 'ASC' ? 'asc' : 'desc';
+    $products = $products->orderBy($sort_column, $sortDir);
+
+    return $products->paginate($no_of_record)->withQueryString();
 }
 
 function showReviews($product_id){
