@@ -218,8 +218,31 @@
         }
     });
 
-    $(document).on('click', '.RemoveBreadcurm', function(){
+    $(document).on('click', '.RemoveBreadcurm, .RemoveHome_announcement', function(){
         $(this).parent().remove();
     });
 </script>
 {{-- Breadcurm --}}
+
+{{-- Home Announcement --}}
+<script>
+    $(document).on('click', '.addhome_announcement', function(){
+        var rand = $(this).attr('data-key');
+        var noofhome_announcement = $('#noofhome_announcement'+rand).val();
+        for (i = 1; i <= noofhome_announcement; i++) {
+            var $count = Math.floor((Math.random() * 999) + 1);
+            var html = `
+                <div class="col-12 mb-2 border rounded p-3 pt-4 position-relative bg-body-light">
+                    <button type="button" class="btn btn-sm btn-alt-secondary position-absolute top-0 end-0 mt-1 me-1 RemoveBreadcurm" aria-label="Remove announcement" style="padding: 5px;">
+                        <i class="fa fa-fw fa-times"></i>
+                    </button>
+                    <div class="mb-0 pe-4">
+                        <textarea name="components[`+rand+`][home_announcement][arr][`+$count+`][text]" class="form-control form-control-sm" rows="4" placeholder="Announcement text"></textarea>
+                    </div>
+                </div>
+            `;
+            $('#styleHomeAnnouncement'+rand).append(html);
+        }
+    });
+</script>
+{{-- Home Announcement --}}

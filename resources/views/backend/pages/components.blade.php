@@ -35,4 +35,7 @@
     <a href="javascript:;" class="col-md-4 component" data-comp="product-list">
         <img src="{{asset('components/product-list.jpg')}}" class="img-thumbnail" />
     </a>
+    <a href="javascript:;" class="col-md-4 component" data-comp="home_announcement">
+        <img src="{{asset('components/home_announcement.jpg')}}" class="img-thumbnail" />
+    </a>
 </div>
