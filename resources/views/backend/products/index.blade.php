@@ -84,13 +84,13 @@ $l_sort = $_GET['sort']??'desc';
                 <th class="d-none d-md-table-cell">Breed</th>
                 <th class="d-none d-sm-table-cell text-center">Added</th>
                 <th>Status</th>
+                <th>Featured</th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
               @foreach($data as $k => $v)
               @if($v->is_home==1)
-              <tr>
                 <td class="text-center fs-sm">
                   <a class="fw-semibold" href="{{route('products.edit', $v->id)}}">
                     <strong>{{$v->id}}</strong>
@@ -102,7 +102,14 @@ $l_sort = $_GET['sort']??'desc';
                 <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('m/d/Y')}}</td>
                 <td>
                   <span class="badge bg-success">Published</span>
-                </td>                
+                </td>  
+                <td>
+                  @if($v->is_featured==1)
+                  <span class="badge bg-success">Featured</span>
+                  @else
+                  <span class="badge bg-warning">Not Featured</span>
+                  @endif
+                </td>
                 <td class="text-center fs-sm">
                   <a class="btn btn-sm btn-alt-secondary" href="{{route('products.status', $v->id)}}" data-bs-toggle="tooltip" title="{{($v->is_active==1)?'Un-publish':'Publish'}}">
                     <i class="fa fa-fw {{($v->is_active==1)?'fa-eye-slash':'fa-eye'}}"></i>
@@ -129,11 +136,18 @@ $l_sort = $_GET['sort']??'desc';
                 <td class="d-none d-sm-table-cell text-center fs-sm">{{$v->created_at->format('m/d/Y')}}</td>
                 <td>
                   @if($v->is_active==1)
-                  <span class="badge bg-success">Published</span>
+                    <span class="badge bg-success">Published</span>
                   @else
-                  <span class="badge bg-warning">Draft</span>
+                    <span class="badge bg-warning">Draft</span>
                   @endif
                 </td>                
+                <td>
+                  @if($v->is_featured==1)
+                    <span class="badge bg-success">Featured</span>
+                  @else
+                    <span class="badge bg-warning">Not Featured</span>
+                  @endif
+                </td>
                 <td class="text-center fs-sm">
                   <a class="btn btn-sm btn-alt-secondary" href="{{route('products.status', $v->id)}}" data-bs-toggle="tooltip" title="{{($v->is_active==1)?'Un-publish':'Publish'}}">
                     <i class="fa fa-fw {{($v->is_active==1)?'fa-eye-slash':'fa-eye'}}"></i>
