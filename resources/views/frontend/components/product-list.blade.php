@@ -6,6 +6,7 @@
     $no_of_record = ($meta['no_of_record'])??6;
     $price_min = request('price_min');
     $price_max = request('price_max');
+    $q = request('q');
     $availability = request('availability', 'all');
     if (!in_array($availability, ['all', 'available', 'unavailable'], true)) {
         $availability = 'all';
@@ -14,6 +15,7 @@
     $products = getProductPage($cat_id, $sort_by, $sort_column, $page, $no_of_record, [
         'price_min' => $price_min,
         'price_max' => $price_max,
+        'q' => $q,
         'availability' => $availability,
     ]);
 @endphp
@@ -37,6 +39,10 @@
                             <form method="get" action="{{ request()->url() }}" class="product-listing-filters" id="productListingFilterForm">
                                 <input type="hidden" name="sort_by" value="{{ $sort_by }}">
                                 <input type="hidden" name="sort_column" value="{{ $sort_column }}">
+                                <div class="filter-content form-group">
+                                    <h4 class="mb-2">Search</h4>
+                                    <input type="text" name="q" class="form-control mb-3" placeholder="Search puppies..." value="{{ $q }}">
+                                </div>
                                 <div class="filter-content form-group">
                                     <h4 class="mb-2">Breed</h4>
                                     <select name="cat_id" class="form-control mb-3" onchange="document.getElementById('productListingFilterForm').submit();">

@@ -300,6 +300,17 @@ function getProductPage($cat_id, $sort_by = 'DESC', $sort_column = 'sort_order',
         $products = $products->where('category_id', $cat_id);
     }
 
+    $search = trim((string) ($filters['q'] ?? ''));
+    if ($search !== '') {
+        $products = $products->where(function ($q) use ($search) {
+            $q->where('title', 'LIKE', "%{$search}%")
+                ->orWhere('sell_price', 'LIKE', "%{$search}%")
+                ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                    $categoryQuery->where('title', 'LIKE', "%{$search}%");
+                });
+        });
+    }
+
     $priceMin = $filters['price_min'] ?? null;
     if ($priceMin !== null && $priceMin !== '' && is_numeric($priceMin)) {
         $products = $products->where('sell_price', '>=', (float) $priceMin);

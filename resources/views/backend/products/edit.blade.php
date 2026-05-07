@@ -238,11 +238,17 @@
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Champion Bloodlines</label>
-              <input type="text" name="champion_bloodlines" class="form-control light-fields input-sm" placeholder="Champion Bloodlines" value="{{ ($data['champion_bloodlines'])??'' }}">
+              <select name="champion_bloodlines" class="form-control light-fields input-sm">
+                <option value="No" @selected(old('champion_bloodlines', $data['champion_bloodlines'] ?? 'No') === 'No')>No</option>
+                <option value="Yes" @selected(old('champion_bloodlines', $data['champion_bloodlines'] ?? 'No') === 'Yes')>Yes</option>
+              </select>
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Champion Sired</label>
-              <input type="text" name="champion_sired" class="form-control light-fields input-sm" placeholder="Champion Sired" value="{{ ($data['champion_sired'])??'' }}">
+              <select name="champion_sired" class="form-control light-fields input-sm">
+                <option value="No" @selected(old('champion_sired', $data['champion_sired'] ?? 'No') === 'No')>No</option>
+                <option value="Yes" @selected(old('champion_sired', $data['champion_sired'] ?? 'No') === 'Yes')>Yes</option>
+              </select>
             </div>
             @php
               $bV = isset($data['vaccinations']) && is_numeric($data['vaccinations']) && (int) $data['vaccinations'] === 1;

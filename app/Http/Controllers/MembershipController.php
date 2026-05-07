@@ -41,8 +41,7 @@ class MembershipController extends Controller
             'btn_txt' => 'nullable|string|max:100',
             'price' => 'required|numeric|min:0',
             'duration_value' => 'required|integer|min:1',
-            'duration_type' => 'required|in:day,month,year',
-            'user_type' => 'required|in:buyer,seller',
+            'duration_type' => 'required|in:day,month,year'
         ]);
 
         $data = $request->except('_token');
@@ -51,7 +50,7 @@ class MembershipController extends Controller
         $data['is_featured_eligible'] = ($request->is_featured_eligible === 'on' || $request->is_featured_eligible == 1) ? 1 : 0;
 
         if ($data['is_default'] == 1) {
-            Membership::where('user_type', $data['user_type'])->update(['is_default' => 0]);
+            // Membership::where('user_type', $data['user_type'])->update(['is_default' => 0]);
         }
 
         Membership::create($data);
@@ -74,8 +73,7 @@ class MembershipController extends Controller
             'btn_txt' => 'nullable|string|max:100',
             'price' => 'required|numeric|min:0',
             'duration_value' => 'required|integer|min:1',
-            'duration_type' => 'required|in:day,month,year',
-            'user_type' => 'required|in:buyer,seller',
+            'duration_type' => 'required|in:day,month,year'
         ]);
 
         $data = $request->except('_token');
@@ -84,9 +82,9 @@ class MembershipController extends Controller
         $data['is_featured_eligible'] = ($request->is_featured_eligible === 'on' || $request->is_featured_eligible == 1) ? 1 : 0;
 
         if ($data['is_default'] == 1) {
-            Membership::where('user_type', $data['user_type'])
-                ->where('id', '!=', $id)
-                ->update(['is_default' => 0]);
+            // Membership::where('user_type', $data['user_type'])
+            //     ->where('id', '!=', $id)
+            //     ->update(['is_default' => 0]);
         }
 
         Membership::findOrFail($id)->update($data);

@@ -262,11 +262,17 @@
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Champion Bloodlines</label>
-                                        <input type="text" name="champion_bloodlines" class="form-control pass-input" placeholder="Champion Bloodlines" value="{{ $product->champion_bloodlines ?? '' }}">
+                                        <select name="champion_bloodlines" class="form-control pass-input">
+                                            <option value="No" @selected(old('champion_bloodlines', $product->champion_bloodlines ?? 'No') === 'No')>No</option>
+                                            <option value="Yes" @selected(old('champion_bloodlines', $product->champion_bloodlines ?? 'No') === 'Yes')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Champion Sired</label>
-                                        <input type="text" name="champion_sired" class="form-control pass-input" placeholder="Champion Sired" value="{{ $product->champion_sired ?? '' }}">
+                                        <select name="champion_sired" class="form-control pass-input">
+                                            <option value="No" @selected(old('champion_sired', $product->champion_sired ?? 'No') === 'No')>No</option>
+                                            <option value="Yes" @selected(old('champion_sired', $product->champion_sired ?? 'No') === 'Yes')>Yes</option>
+                                        </select>
                                     </div>
                                     @php
                                         $vaccDef = is_numeric($product->vaccinations ?? null) && (int) $product->vaccinations === 1 ? '1' : '0';

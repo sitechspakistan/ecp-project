@@ -60,6 +60,16 @@
           @endisset
         </ul>
       </div>
+      @if(!request()->routeIs('home'))
+        <form method="get" action="{{ url('products') }}" class="d-none d-lg-flex ms-lg-3 me-lg-3" style="min-width: 260px;">
+          <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search puppies..." value="{{ request('q') }}" aria-label="Search puppies">
+            <button class="btn btn-primary" type="submit" aria-label="Search">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+        </form>
+      @endif
       <ul class="nav header-navbar-rht">
         @if(!Auth::check())
           <li class="nav-item">

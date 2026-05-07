@@ -259,11 +259,17 @@
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Champion Bloodlines</label>
-                                        <input type="text" name="champion_bloodlines" class="form-control pass-input" placeholder="Champion Bloodlines" value="{{ ($data['champion_bloodlines'])??'' }}">
+                                        <select name="champion_bloodlines" class="form-control pass-input">
+                                            <option value="No" @selected(old('champion_bloodlines', $data['champion_bloodlines'] ?? 'No') === 'No')>No</option>
+                                            <option value="Yes" @selected(old('champion_bloodlines', $data['champion_bloodlines'] ?? 'No') === 'Yes')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Champion Sired</label>
-                                        <input type="text" name="champion_sired" class="form-control pass-input" placeholder="Champion Sired" value="{{ ($data['champion_sired'])??'' }}">
+                                        <select name="champion_sired" class="form-control pass-input">
+                                            <option value="No" @selected(old('champion_sired', $data['champion_sired'] ?? 'No') === 'No')>No</option>
+                                            <option value="Yes" @selected(old('champion_sired', $data['champion_sired'] ?? 'No') === 'Yes')>Yes</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 form-group">
                                         <label class="col-form-label">Vaccinations &amp; Deworming</label>

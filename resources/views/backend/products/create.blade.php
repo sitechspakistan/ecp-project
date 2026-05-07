@@ -239,11 +239,17 @@
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Champion Bloodlines</label>
-              <input type="text" name="champion_bloodlines" class="form-control light-fields input-sm" placeholder="Champion Bloodlines">
+              <select name="champion_bloodlines" class="form-control light-fields input-sm">
+                <option value="No" @selected(old('champion_bloodlines', 'No') === 'No')>No</option>
+                <option value="Yes" @selected(old('champion_bloodlines', 'No') === 'Yes')>Yes</option>
+              </select>
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Champion Sired</label>
-              <input type="text" name="champion_sired" class="form-control light-fields input-sm" placeholder="Champion Sired">
+              <select name="champion_sired" class="form-control light-fields input-sm">
+                <option value="No" @selected(old('champion_sired', 'No') === 'No')>No</option>
+                <option value="Yes" @selected(old('champion_sired', 'No') === 'Yes')>Yes</option>
+              </select>
             </div>
             <div class="form-group col-md-4 mb-2">
               <label class="form-label">Vaccinations &amp; Deworming</label>
