@@ -413,7 +413,7 @@ function getFeaturedProducts($featured, $category_type = [], $limit = null, $lat
                     ->where('is_active', 1)
                     ->whereHas('user', function ($query) {
                         $query->whereIn('membership_id', featuredSellerMembershipCodes())
-                              ->where('expiry_date', '>', now());
+                              ->whereDate('expiry_date', '>', now());
                     });
                     
     if(count($category_type) > 0){
